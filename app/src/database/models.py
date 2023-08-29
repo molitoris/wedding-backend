@@ -1,20 +1,43 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Mapped, mapped_column, declarative_base, Session
-from datetime import datetime
+import sys
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, Session, relationship
+from typing import List
 
-Base = declarative_base()
+
+sys.path.append('/workspaces/wedding-api/app')
+
+from src.database.db import Base
+from src.code_generator import generate_code
+
 
 class Invitation(Base):
-    __tablename__ = 'invitation'
+    __tablename__ = 'invitation_table'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     invitation_hash: Mapped[str]
-    email_verification_hash: Mapped[str]
-    status: Mapped[int]
+    email_verification_hash: Mapped[str] = ''
+    status: Mapped[int] = 0
+    associated_guests: Mapped[List["Guest"]] = relationship(back_populates="invitation")
+
+
+class Guest(Base):
+    __tablename__ = 'guest_table'
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    status: Mapped[int] = 0
+    email: Mapped[str] = ''
+    password_hash: Mapped[str] = ''
+    first_name: Mapped[str]
+    last_name: Mapped[str]
+    food_option: Mapped[int] = 0
+    allergies: Mapped[str] = ''
+    invitation_id: Mapped[int] = mapped_column(ForeignKey("invitation_table.id"))
+    invitation: Mapped["Invitation"] = relationship(back_populates="associated_guests")
+
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'user_table'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str]
@@ -23,24 +46,12 @@ class User(Base):
     status: Mapped[int]
 
 
-class Guest(Base):
-    __tablename__ = 'guest'
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    status: Mapped[int]
-    email: Mapped[str]
-    password_hash: Mapped[str]
-    first_name: Mapped[str]
-    last_name: Mapped[str]
-    food_option: Mapped[int]
-    allergies: Mapped[str]
+# with Session(engine) as session:
+#     i = Invitation(invitation_hash=generate_code(16))
 
-engine = create_engine("sqlite:///test.db", echo=True)
-# Base.metadata.create_all(engine)
-
-with Session(engine) as session:
-    rafa = User(email='rafa.molitoris@gmail.com', password_hash='123', last_login=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), status=0)
-
-    session.add(rafa)
-
-    session.commit()
+#     i.associated_guests.append(Guest(first_name='Rafael', last_name='Müller'))
+#     i.associated_guests.append(Guest(first_name='Melanie', last_name='Häner'))
+    
+#     session.add(i)
+#     session.commit()
