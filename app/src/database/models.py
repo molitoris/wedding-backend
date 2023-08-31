@@ -10,40 +10,33 @@ from src.database.db import Base
 from src.code_generator import generate_code
 
 
-class Invitation(Base):
-    __tablename__ = 'invitation_table'
+class User(Base):
+    __tablename__ = 'user_table'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    invitation_hash: Mapped[str]
-    email_verification_hash: Mapped[str] = ''
-    status: Mapped[int] = 0
-    associated_guests: Mapped[List["Guest"]] = relationship(back_populates="invitation")
+    email: Mapped[str] = mapped_column(unique=True, nullable=True)
+    password_hash: Mapped[str] = mapped_column(nullable=True)
+    invitation_hash: Mapped[str] = mapped_column(index=True, unique=True, nullable=False)
+    email_verification_hash: Mapped[str] = mapped_column(index=True, unique=True, nullable=True)
+    last_login: Mapped[str] = mapped_column(nullable=True)
+    status: Mapped[int]
+    # Relationship
+    associated_guests: Mapped[List["Guest"]] = relationship(back_populates="user")
 
 
 class Guest(Base):
     __tablename__ = 'guest_table'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    status: Mapped[int] = 0
-    email: Mapped[str] = ''
-    password_hash: Mapped[str] = ''
     first_name: Mapped[str]
     last_name: Mapped[str]
-    food_option: Mapped[int] = 0
-    allergies: Mapped[str] = ''
-    invitation_id: Mapped[int] = mapped_column(ForeignKey("invitation_table.id"))
-    invitation: Mapped["Invitation"] = relationship(back_populates="associated_guests")
-
-
-
-class User(Base):
-    __tablename__ = 'user_table'
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    email: Mapped[str]
-    password_hash: Mapped[str]
-    last_login: Mapped[str]
+    food_option: Mapped[int]
+    allergies: Mapped[str]
     status: Mapped[int]
+    # Relationship
+    user_id: Mapped[int] = mapped_column(ForeignKey("user_table.id"))
+    user: Mapped["User"] = relationship(back_populates="associated_guests")
+
 
 
 

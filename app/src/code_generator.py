@@ -2,7 +2,7 @@ import secrets
 import hashlib
 
 
-def generate_code(length: int=16):
+def generate_code(length: int=32):
     random_bytes = secrets.token_bytes(length)
     return random_bytes.hex()
 
