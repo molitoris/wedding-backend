@@ -32,7 +32,7 @@ class Invitation(BaseModel):
     email: str = ''
     password_hash: str = ''
     status: RegistrationStatus = RegistrationStatus.UNUSED
-    email_verification_code: str = ''
+    email_verification_hash: str = ''
     associated_guests: List[Guest] = Field(default_factory=list)
 
 class User(BaseModel):
