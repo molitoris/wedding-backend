@@ -7,7 +7,7 @@ from typing import List
 sys.path.append('/workspaces/wedding-api/app')
 
 from src.database.db import Base
-from src.code_generator import generate_code
+from src.security import generate_token
 
 
 class User(Base):
