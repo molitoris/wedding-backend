@@ -1,5 +1,4 @@
 import smtplib, ssl
-import secrets
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path

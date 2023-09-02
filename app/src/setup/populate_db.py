@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.append('/workspaces/wedding-api/app')
 
-from src.code_generator import generate_code, hash_string
+from src.security import generate_token, hash_token
 from src.database.models import User, Guest
 
 from src.database.db import Base, engine, SessionLocal
@@ -23,8 +23,8 @@ if __name__ == '__main__':
 
 
     for group_id in df['group'].unique():
-        invitation_token = generate_code(8)
-        inviation_hash = hash_string(invitation_token)
+        invitation_token = generate_token(8)
+        inviation_hash = hash_token(invitation_token)
         invitation_codes[inviation_hash] = invitation_token
         i = User(invitation_hash=inviation_hash, status=0, email_verification_hash=None, last_login=None, email=None, password_hash=None)
 
