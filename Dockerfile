@@ -7,13 +7,13 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_CREATE=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 
-WORKDIR /workspace/wedding-api/app
+WORKDIR /workspaces/wedding-api/
 
-COPY pyproject.toml poetry.lock ./
+COPY ./pyproject.toml ./poetry.lock ./
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
-COPY ./app ./
+COPY ./app ./app
 
 RUN poetry install --without dev
 
-ENTRYPOINT ["poetry", "run", "python", "-m", "src.main"]
+ENTRYPOINT ["poetry", "run", "python", "-m", "app.src.main"]
