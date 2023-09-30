@@ -6,7 +6,7 @@ import json
 sys.path.append('/workspaces/wedding-api/app')
 
 from src.security import generate_token, hash_token
-from src.database.models import User, Guest
+from src.database.models import User, Guest, Role
 from src.setup.qr_code import QrCodeImageGenerator
 
 from src.database.db import Base, engine, SessionLocal
@@ -48,6 +48,10 @@ if __name__ == '__main__':
         # Associate guest based on group id
         for id, row in df.loc[df['group'] == group_id, :].iterrows():
             user.associated_guests.append(Guest(first_name=row.first_name, last_name=row.last_name, status=0, food_option=0, allergies=''))
+
+            for role in row.roles.split(', '):
+                user.role.append(Role(name=role))
+
             names.append(row.first_name)
 
         # Generate QR Code for user registration
