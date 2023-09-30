@@ -17,6 +17,7 @@ python-jose = "^3.3.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 qrcode = "^7.4.2"
 pillow = "^10.0.1"
+pydantic-settings = "^2.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
