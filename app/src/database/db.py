@@ -2,7 +2,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 
-engine = create_engine("sqlite:///data/db.sqlite", echo=True, connect_args={"check_same_thread": False})
+from src.config.app_config import config
+
+db_file_path = config.db.path.joinpath(config.db.filename).absolute()
+engine = create_engine(f"sqlite:///{db_file_path}", echo=True, connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

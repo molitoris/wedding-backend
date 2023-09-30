@@ -11,12 +11,10 @@ sys.path.append('/workspaces/wedding-api/app')
 
 from src.database.db import get_db, Session
 from src.database.models import User
-from src.security import generate_token, hash_token, verify_token, hash_password, verify_password
+from src.security import generate_token, hash_token, hash_password, verify_password
 from src.email_sender import send_verification_email
+from src.config.app_config import config
 
-SECRET_KEY = ""
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -40,7 +38,7 @@ def create_access_token(user: User, expires_delta: timedelta = timedelta(minutes
     data = {'sub': user.email}
     to_encode = data.copy()
     to_encode.update({'exp': datetime.utcnow() + expires_delta})
-    encoded_jwt = jwt.encode(to_encode, key=SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, key=config.api.secret_key, algorithm=config.api.algorithm)
     return encoded_jwt
 
 
@@ -80,7 +78,7 @@ async def verify_email(token: EmailVerificationDate, db: Session = Depends(get_d
     db.refresh(user)
 
 
-    access_token = create_access_token(user=user, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    access_token = create_access_token(user=user, expires_delta=timedelta(minutes=config.api.access_token_expire_minutes))
 
     return {'access_token': access_token, 'token_type': 'bearer'}
 
@@ -131,7 +129,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
                                           detail='Could not validate credentials',
                                           headers={'WWW-Authenticate': 'Bearer'})
     try:
-        payload = jwt.decode(token, key=SECRET_KEY, algorithms=ALGORITHM)
+        payload = jwt.decode(token, key=config.api.secret_key, algorithms=config.api.algorithm)
         email: str = payload.get('sub')
         if email is None:
             raise credentials_exception
@@ -161,7 +159,7 @@ async def login(data: LoginData, db: Session = Depends(get_db)):
                             detail="Incorrect username or password", 
                             headers={"WWW-Autenticate": "Bearer"})
 
-    access_token = create_access_token(user=user, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    access_token = create_access_token(user=user, expires_delta=timedelta(minutes=config.api.access_token_expire_minutes))
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 @app_v1.get('/guest-info')

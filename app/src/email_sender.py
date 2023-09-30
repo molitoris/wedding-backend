@@ -4,13 +4,10 @@ from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
+from src.config.app_config import config
+
 
 def send_verification_email(receiver_email: str, verification_token: str):
-    # TODO: Use config to load email credentials
-    smtp_server = "smtp.gmail.com"
-    smtp_port = 465
-    smtp_username = "nass3rver@gmail.com"
-    smtp_password = ""
 
     sender_email = "noreplay@molitoris.org"
     subject = "Email Bestätigung"
@@ -42,8 +39,8 @@ def send_verification_email(receiver_email: str, verification_token: str):
     message.attach(MIMEText(email_content, 'html'))
 
     context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(host=smtp_server, port=smtp_port, context=context) as server:
-        server.login(user=smtp_username, password=smtp_password)
+    with smtplib.SMTP_SSL(host=config.email.smtp_server, port=config.email.smtp_port, context=context) as server:
+        server.login(user=config.email.smtp_username, password=config.email.smtp_password)
         server.sendmail(from_addr=sender_email,
                         to_addrs=receiver_email, 
                         msg=message.as_string())

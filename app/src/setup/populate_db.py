@@ -10,43 +10,56 @@ from src.database.models import User, Guest
 from src.setup.qr_code import QrCodeImageGenerator
 
 from src.database.db import Base, engine, SessionLocal
+from src.config.app_config import config
 
 if __name__ == '__main__':
+    # Create table
     Base.metadata.create_all(engine)
+
+    print(config.setup.guest_list_filepath.absolute())
+    df = pd.read_csv(config.setup.guest_list_filepath, header=0, delimiter=';')
+
+    guest_registration_url = config.frontend_base_url + config.setup.guest_registration_endpoint
+
+    # QR Code
+    qr_generator = QrCodeImageGenerator()
+    qr_code_path = config.setup.qr_code_output_path
+    qr_code_path.mkdir(parents=True, exist_ok=True)
+
+    # Inviation data
+    invitation_path = config.setup.invitation_data_output_path
+    invitation_filepath = invitation_path.joinpath(config.setup.invitation_data_filename)
+    invitation_path.mkdir(parents=True, exist_ok=True)
 
     invitation_codes = {}
 
-    p = Path('./raw/guests.csv')
-    print(p.absolute())
-    df = pd.read_csv(p, header=0, delimiter=';')
-
-    base_url = 'https://homepage-beta.molitoris.org/registration?code='
-    output_base_path = Path(__file__).parent.joinpath('../../../data/qr_codes')
-    output_base_path.mkdir(parents=True)
-
     session = SessionLocal()
 
-    qr_generator = QrCodeImageGenerator()
-
-
     for group_id in df['group'].unique():
-        invitation_token = generate_token(8)
+        # Generate token
+        invitation_token = generate_token(config.setup.invitation_token_size)
         inviation_hash = hash_token(invitation_token)
-        i = User(invitation_hash=inviation_hash, status=0, email_verification_hash=None, last_login=None, email=None, password_hash=None)
+        
+        # Create user
+        user = User(invitation_hash=inviation_hash, status=0, email_verification_hash=None, last_login=None, email=None, password_hash=None)
 
         names = []
+
+        # Associate guest based on group id
         for id, row in df.loc[df['group'] == group_id, :].iterrows():
-            i.associated_guests.append(Guest(first_name=row.first_name, last_name=row.last_name, status=0, food_option=0, allergies=''))
+            user.associated_guests.append(Guest(first_name=row.first_name, last_name=row.last_name, status=0, food_option=0, allergies=''))
             names.append(row.first_name)
 
-        qr_generator.get_image(text=base_url + invitation_token, output_path=output_base_path.joinpath('_'.join(names)).with_suffix('.png'))
+        # Generate QR Code for user registration
+        qr_generator.get_image(text=guest_registration_url + invitation_token, output_path=qr_code_path.joinpath('_'.join(names)).with_suffix('.png'))
 
+        # Store token with guest names
         invitation_codes[inviation_hash] = (invitation_token, ", ".join(names))
 
-        session.add(i)
+        session.add(user)
 
     session.commit()
     session.close()
 
-    with open(output_base_path.joinpath('../hash_lookup.txt'), 'w') as f:
+    with open(invitation_filepath, 'w') as f:
         f.write(json.dumps(invitation_codes, indent=2, ensure_ascii=False))
