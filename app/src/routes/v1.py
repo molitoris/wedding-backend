@@ -23,8 +23,10 @@ app_v1 = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:4200",
-    "http://172.18.0.1"
+    "http://172.18.0.1",
 ]
+if config.frontend_base_url:
+    origins.append(config.frontend_base_url)
 
 app_v1.add_middleware(
     CORSMiddleware,
