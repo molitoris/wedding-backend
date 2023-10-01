@@ -25,6 +25,7 @@ def send_verification_email(receiver_email: str, verification_token: str):
     template = env.get_template('email_verification_template.html')
 
     template_data = {
+        'base_url': config.frontend_base_url,
         'email_token': verification_token
     }
 
@@ -39,8 +40,13 @@ def send_verification_email(receiver_email: str, verification_token: str):
     message.attach(MIMEText(email_content, 'html'))
 
     context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(host=config.email.smtp_server, port=config.email.smtp_port, context=context) as server:
-        server.login(user=config.email.smtp_username, password=config.email.smtp_password)
+    with smtplib.SMTP(host=config.email.smtp_server, port=config.email.smtp_port) as server:
+        
+        # Running localhost does not require TLS
+        if config.email.smtp_server != 'localhost':
+            server.starttls(context=context)
+            server.login(user=config.email.smtp_username, password=config.email.smtp_password)
+
         server.sendmail(from_addr=sender_email,
                         to_addrs=receiver_email, 
                         msg=message.as_string())
