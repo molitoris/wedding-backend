@@ -6,7 +6,7 @@ import json
 sys.path.append('/workspaces/wedding-api/app')
 
 from src.security import generate_token, hash_token
-from src.database.models import User, Guest, Role
+from src.database.db_tables import User, Guest, Role
 from src.setup.qr_code import QrCodeImageGenerator
 
 from src.database.db import Base, engine, SessionLocal
