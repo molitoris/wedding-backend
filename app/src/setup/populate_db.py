@@ -8,6 +8,7 @@ sys.path.append('/workspaces/wedding-api/app')
 from src.security import generate_token, hash_token
 from src.database.db_tables import User, Guest, Role
 from src.database.models.user_status import UserStatus
+from src.database.models.user_role import UserRole
 from src.setup.qr_code import QrCodeImageGenerator
 
 from src.database.db import Base, engine, SessionLocal
@@ -51,7 +52,15 @@ if __name__ == '__main__':
             user.associated_guests.append(Guest(first_name=row.first_name, last_name=row.last_name, status=0, food_option=0, allergies=''))
 
             for role in row.roles.split(', '):
-                user.role.append(Role(name=role))
+                role = role.lower().trim()
+                if role == 'guest':
+                    user.role.append(UserRole.GUEST)
+                elif role == 'witness':
+                    user.role.append(UserRole.WITHNESSES)
+                elif role == 'admin':
+                    user.role.append(UserRole.ADMIN)
+                else:
+                    raise AttributeError('Unknown role')
 
             names.append(row.first_name)
 
