@@ -7,6 +7,7 @@ sys.path.append('/workspaces/wedding-api/app')
 
 from src.security import generate_token, hash_token
 from src.database.db_tables import User, Guest, Role
+from src.database.models.user_status import UserStatus
 from src.setup.qr_code import QrCodeImageGenerator
 
 from src.database.db import Base, engine, SessionLocal
@@ -41,7 +42,7 @@ if __name__ == '__main__':
         inviation_hash = hash_token(invitation_token)
         
         # Create user
-        user = User(invitation_hash=inviation_hash, status=0, email_verification_hash=None, last_login=None, email=None, password_hash=None)
+        user = User(invitation_hash=inviation_hash, status=UserStatus.UNSEEN, email_verification_hash=None, last_login=None, email=None, password_hash=None)
 
         names = []
 
