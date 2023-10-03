@@ -10,7 +10,7 @@ from typing import Annotated
 sys.path.append('/workspaces/wedding-api/app')
 
 from src.database.db import get_db, Session
-from src.database.models import User
+from src.database.db_tables import User
 from src.security import generate_token, hash_token, hash_password, verify_password
 from src.email_sender import send_verification_email
 from src.config.app_config import config

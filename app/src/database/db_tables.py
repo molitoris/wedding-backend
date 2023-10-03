@@ -1,12 +1,17 @@
 import sys
+from typing import Any, List
+from enum import Enum
+
 from sqlalchemy import Table, Column, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
-
+from sqlalchemy_utils.types.choice import ChoiceType
 
 sys.path.append('/workspaces/wedding-api/app')
 
 from src.database.db import Base
+from .models.guest_status import GuestStatus
+from .models.user_status import UserStatus
+
 
 user_role_table = Table(
     'user_role_table',
@@ -33,7 +38,7 @@ class User(Base):
     invitation_hash: Mapped[str] = mapped_column(index=True, unique=True, nullable=False)
     email_verification_hash: Mapped[str] = mapped_column(index=True, unique=True, nullable=True)
     last_login: Mapped[str] = mapped_column(nullable=True)
-    status: Mapped[int]
+    status: Mapped[ChoiceType(UserStatus)]
     # Relationships
 
     # 1:n = User : Guest
@@ -51,7 +56,7 @@ class Guest(Base):
     last_name: Mapped[str]
     food_option: Mapped[int]
     allergies: Mapped[str]
-    status: Mapped[int]
+    status: Mapped[ChoiceType(GuestStatus)]
     # Relationship
     user_id: Mapped[int] = mapped_column(ForeignKey("user_table.id"))
     user: Mapped["User"] = relationship(back_populates="associated_guests")
