@@ -56,7 +56,7 @@ if __name__ == '__main__':
                 if role == 'guest':
                     user.role.append(UserRole.GUEST)
                 elif role == 'witness':
-                    user.role.append(UserRole.WITHNESSES)
+                    user.role.append(UserRole.WITNESS)
                 elif role == 'admin':
                     user.role.append(UserRole.ADMIN)
                 else:
