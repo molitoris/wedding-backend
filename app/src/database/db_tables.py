@@ -11,6 +11,7 @@ sys.path.append('/workspaces/wedding-api/app')
 from src.database.db import Base
 from .models.guest_status import GuestStatus
 from .models.user_status import UserStatus
+from .models.user_role import UserRole
 
 
 user_role_table = Table(
@@ -25,7 +26,7 @@ class Role(Base):
     __tablename__ = 'role_table'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str]
+    name: Mapped[ChoiceType(UserRole)]
 
 
 class User(Base):
