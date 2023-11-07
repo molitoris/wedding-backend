@@ -1,6 +1,4 @@
-import os
 import sys
-from pytest import fixture
 from fastapi.testclient import TestClient
 
 sys.path.append('/workspaces/wedding-api/app')
