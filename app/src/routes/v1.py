@@ -65,7 +65,7 @@ async def register_user(background_task: BackgroundTasks, data: RegistrationData
 
     # User registration only allowed for users which are unseen or unverified
     if not user or user.status not in {UserStatus.UNSEEN, UserStatus.UNVERIFIED}:
-        raise HTTPException(status_code=404, detail='User registration failed')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='User registration failed')
 
     try:
         email_token = generate_token()
@@ -79,7 +79,7 @@ async def register_user(background_task: BackgroundTasks, data: RegistrationData
         db.refresh(user)
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail='User registration failed')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='User registration failed')
     
     background_task.add_task(func=send_verification_email, receiver_email=user.email, verification_token=email_token)
     print(email_token)
@@ -94,7 +94,7 @@ async def verify_email(token: EmailVerificationDate, db: Session = Depends(get_d
 
     # E-Mail verification is only allowed for unverified users 
     if not user or user.status != UserStatus.UNVERIFIED:
-        raise HTTPException(status_code=404, detail='Email verification failed')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Email verification failed')
 
     user.status = UserStatus.VERIFIED
     db.commit()
