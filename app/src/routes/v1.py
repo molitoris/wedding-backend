@@ -4,11 +4,11 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
-from pydantic import BaseModel
 from typing import Annotated
 
 sys.path.append('/workspaces/wedding-api/app')
 
+from src.routes.dto import EmailVerificationDate, Guest, LoginData, RegistrationData
 from src.database.db import get_db, Session
 from src.database.db_tables import User
 from src.database.models.user_status import UserStatus
@@ -46,25 +46,6 @@ def create_access_token(user: User, expires_delta: timedelta = timedelta(minutes
     return encoded_jwt
 
 
-class RegistrationData(BaseModel):
-    invitation_token: str
-    email: str
-    password: str
-
-class LoginData(BaseModel):
-    email: str
-    password: str
-
-class EmailVerificationDate(BaseModel):
-    token: str
-
-
-class Guest(BaseModel):
-    id: int
-    first_name: str
-    last_name: str
-    food_option: int
-    allergies: str
 
 
 @app_v1.get('/ping')
