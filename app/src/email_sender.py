@@ -4,7 +4,10 @@ from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
-from src.config.app_config import config
+from src.config.app_config import load_config
+
+
+config = load_config()
 
 
 def send_verification_email(receiver_email: str, verification_token: str):
