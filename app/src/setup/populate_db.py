@@ -12,9 +12,12 @@ from src.database.models.user_role import UserRole
 from src.setup.qr_code import QrCodeImageGenerator
 
 from src.database.db import Base, engine, SessionLocal
-from src.config.app_config import config
+from src.config.app_config import load_config
 
 if __name__ == '__main__':
+
+    config = load_config()
+
     # Create table
     Base.metadata.create_all(engine)
 
@@ -52,7 +55,7 @@ if __name__ == '__main__':
             user.associated_guests.append(Guest(first_name=row.first_name, last_name=row.last_name, status=0, food_option=0, allergies=''))
 
             for role in row.roles.split(', '):
-                role = role.lower().trim()
+                role = role.lower().strip()
                 if role == 'guest':
                     user.role.append(UserRole.GUEST)
                 elif role == 'witness':

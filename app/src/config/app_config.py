@@ -36,18 +36,21 @@ class Config(BaseSettings):
     db: DatabaseSettings
     frontend_base_url: str
 
-if os.environ.get('mode', 'production') == 'production':
-    file = pathlib.Path('/config/config.json')
-else:
-    file = pathlib.Path('/config/config_dev.json')
+def load_config():
 
-if not file.exists():
-    raise FileNotFoundError(f'Could not find config: {file}')
+    if os.environ.get('mode', 'production') == 'production':
+        file = pathlib.Path('./config/config.json')
+    else:
+        file = pathlib.Path('/config/config_dev.json')
 
-with open(file=file, mode='r') as f:
-    data = json.load(f)
+    if not file.exists():
+        raise FileNotFoundError(f'Could not find config: {file}')
 
-config = Config(**data)
+    with open(file=file, mode='r') as f:
+        data = json.load(f)
+
+    return Config(**data)
 
 if __name__ == '__main__':
+    config = load_config()
     print(config.model_dump())

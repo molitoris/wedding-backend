@@ -15,7 +15,7 @@ from src.database.models.user_status import UserStatus
 from src.database.models.guest_status import GuestStatus
 from src.security import generate_token, hash_token, hash_password, verify_password
 from src.email_sender import send_verification_email
-from src.config.app_config import config
+from src.config.app_config import load_config
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -27,6 +27,9 @@ origins = [
     "http://localhost:4200",
     "http://172.18.0.1",
 ]
+
+config = load_config()
+
 if config.frontend_base_url:
     origins.append(config.frontend_base_url)
 
