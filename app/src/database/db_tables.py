@@ -1,14 +1,15 @@
 import sys
 
 from sqlalchemy import Table, Column, ForeignKey, Enum, Integer, String
-from sqlalchemy.orm import relationship, mapped_column
+from sqlalchemy.orm import relationship, mapped_column, declarative_base
 
 sys.path.append('/workspaces/wedding-api/app')
 
-from src.database.db import Base
 from .models.guest_status import GuestStatus
 from .models.user_status import UserStatus
 from .models.user_role import UserRole
+from src.database.db_base import Base
+
 
 
 # Intermediate table to store m:n relation
@@ -27,7 +28,7 @@ class Role(Base):
     name = Column(Enum(UserRole))
 
     # m:n = Role:User
-    user = relationship('User', secondary=user_role_table)
+    user = relationship('User', secondary=user_role_table, back_populates='role')
 
 
 class User(Base):
@@ -47,7 +48,7 @@ class User(Base):
     associated_guests = relationship('Guest', back_populates='user')
     
     # m:n = User:Role
-    role = relationship('Role', secondary=user_role_table)
+    role = relationship('Role', secondary=user_role_table, back_populates='user')
 
 
 class Guest(Base):

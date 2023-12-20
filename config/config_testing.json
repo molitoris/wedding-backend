@@ -1,0 +1,26 @@
+{
+  "setup": {
+    "guest_list_filepath": "./tests/raw/guest_list.csv",
+    "guest_registration_endpoint": "/registration?token=",
+    "qr_code_output_path": "./tests/data/qr_codes",
+    "invitation_token_size": 8,
+    "invitation_data_filename": "inviation_data.txt",
+    "invitation_data_output_path": "./tests/data"
+  },
+  "email": {
+    "smtp_server": "localhost",
+    "smtp_port": "1025",
+    "smtp_username": "",
+    "smtp_password": ""
+  },
+  "api": {
+    "secret_key": "123",
+    "algorithm": "HS512",
+    "access_token_expire_minutes": 30
+  },
+  "db": {
+    "path": "./tests/data",
+    "filename": "db.sqlite"
+  },
+  "frontend_base_url": "localhost:4200"
+}

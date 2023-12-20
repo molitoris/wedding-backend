@@ -1,16 +1,18 @@
+import sys
 import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
+sys.path.append('/workspaces/wedding-api/app')
+
 from src.config.app_config import load_config
 
 
-config = load_config()
-
-
 def send_verification_email(receiver_email: str, verification_token: str):
+
+    config = load_config()
 
     sender_email = "noreplay@molitoris.org"
     subject = "Email Bestätigung"
@@ -53,3 +55,6 @@ def send_verification_email(receiver_email: str, verification_token: str):
         server.sendmail(from_addr=sender_email,
                         to_addrs=receiver_email, 
                         msg=message.as_string())
+
+if __name__ == '__main__':
+    send_verification_email('rafael.mueller1@gmail.com', '123')
