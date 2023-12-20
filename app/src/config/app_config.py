@@ -28,6 +28,9 @@ class DatabaseSettings(BaseModel):
     path: pathlib.Path
     filename: str
 
+    def get_file_path(self):
+     return self.path.joinpath(self.filename).absolute()
+
 
 class Config(BaseSettings):
     setup: Setup
@@ -36,12 +39,18 @@ class Config(BaseSettings):
     db: DatabaseSettings
     frontend_base_url: str
 
-def load_config():
 
-    if os.environ.get('mode', 'production') == 'production':
+def load_config(data=None):
+
+    if data is not None:
+        return Config(**data)
+
+    env = os.getenv("APP_ENV", "production")
+
+    if env == 'production':
         file = pathlib.Path('./config/config.json')
-    else:
-        file = pathlib.Path('/config/config_dev.json')
+    elif env == 'testing':
+        file = pathlib.Path('./config/config_testing.json')
 
     if not file.exists():
         raise FileNotFoundError(f'Could not find config: {file}')
@@ -50,7 +59,3 @@ def load_config():
         data = json.load(f)
 
     return Config(**data)
-
-if __name__ == '__main__':
-    config = load_config()
-    print(config.model_dump())
