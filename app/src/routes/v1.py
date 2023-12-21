@@ -1,24 +1,22 @@
 import sys
 from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
-from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime, timedelta
-from jose import jwt, JWTError
+from datetime import timedelta
 from typing import Annotated
 
 sys.path.append('/workspaces/wedding-api/app')
 
+from src.routes.api_utils import authenticate_user, create_access_token, get_current_active_user
 from src.routes.dto import EmailVerificationDate, Guest, LoginData, RegistrationData
 from src.database.db import get_db, Session
 from src.database.db_tables import User
 from src.database.models.user_status import UserStatus
 from src.database.models.guest_status import GuestStatus
-from src.security import generate_token, hash_token, hash_password, verify_password
+from src.security import generate_token, hash_token, hash_password
 from src.email_sender import send_verification_email
 from src.config.app_config import load_config
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app_v1 = FastAPI()
 
@@ -40,15 +38,6 @@ app_v1.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-def create_access_token(user: User, expires_delta: timedelta = timedelta(minutes=15)):
-    data = {'sub': user.email}
-    to_encode = data.copy()
-    to_encode.update({'exp': datetime.utcnow() + expires_delta})
-    encoded_jwt = jwt.encode(to_encode, key=config.api.secret_key, algorithm=config.api.algorithm)
-    return encoded_jwt
-
-
 
 
 @app_v1.get('/ping')
@@ -86,6 +75,7 @@ async def register_user(background_task: BackgroundTasks, data: RegistrationData
 
     return {'status': 'success', 'message': 'Verification email send'}
 
+
 @app_v1.post('/email-verification')
 async def verify_email(token: EmailVerificationDate, db: Session = Depends(get_db)):
 
@@ -105,42 +95,6 @@ async def verify_email(token: EmailVerificationDate, db: Session = Depends(get_d
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-def authenticate_user(email: str, password: str, db: Session):
-    user = db.query(User).filter_by(email=email).first()
-
-    # Only verified user can login
-    if not user or user.status not in {UserStatus.VERIFIED}:
-        return False
-    if not verify_password(password, user.password_hash):
-        return False
-    return user
-
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                          detail='Could not validate credentials',
-                                          headers={'WWW-Authenticate': 'Bearer'})
-    try:
-        payload = jwt.decode(token, key=config.api.secret_key, algorithms=config.api.algorithm)
-        email: str = payload.get('sub')
-        if email is None:
-            raise credentials_exception
-    
-    except JWTError:
-        raise credentials_exception
-
-    user = db.query(User).filter_by(email=email).first()
-    if user is None:
-        raise credentials_exception
-    
-    return user
-
-async def get_current_active_user(current_user: Annotated[User, Depends(get_current_user)]):
-    if current_user.status not in {UserStatus.VERIFIED}:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Inactive user')
-    return current_user
-        
-
 @app_v1.post('/login')
 async def login(data: LoginData, db: Session = Depends(get_db)):
     user = authenticate_user(data.email, data.password, db)
@@ -154,6 +108,7 @@ async def login(data: LoginData, db: Session = Depends(get_db)):
     access_token = create_access_token(user=user, expires_delta=timedelta(minutes=config.api.access_token_expire_minutes))
     return {'access_token': access_token, 'token_type': 'bearer'}
 
+
 @app_v1.get('/guest-info')
 async def guest_info(current_user: Annotated[User, Depends(get_current_active_user)]):
     guests = []
@@ -162,4 +117,3 @@ async def guest_info(current_user: Annotated[User, Depends(get_current_active_us
                             food_option=guest.food_option, allergies=guest.allergies))
 
     return {'guests': guests}
-
