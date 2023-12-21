@@ -1,8 +1,4 @@
 import os
-import sys
-
-sys.path.append('/workspaces/wedding-api/app')
-sys.path.append('/workspaces/wedding-api/tests')
 
 from app.src.email_sender import send_verification_email
 from app.src.config.app_config import load_config

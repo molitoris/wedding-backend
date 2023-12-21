@@ -1,7 +1,4 @@
-import sys
 import uvicorn
-
-sys.path.append('/workspaces/wedding-api/app')
 
 from src.routes.v1 import app_v1
 

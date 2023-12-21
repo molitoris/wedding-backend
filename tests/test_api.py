@@ -1,9 +1,5 @@
 import os
-import sys
 from fastapi.testclient import TestClient
-
-sys.path.append('/workspaces/wedding-api/app')
-sys.path.append('/workspaces/wedding-api/tests')
 
 os.environ['APP_ENV'] = 'testing'
 

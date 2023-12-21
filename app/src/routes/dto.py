@@ -1,13 +1,16 @@
 from pydantic import BaseModel
 
+
 class RegistrationData(BaseModel):
     invitation_token: str
     email: str
     password: str
 
+
 class LoginData(BaseModel):
     email: str
     password: str
+
 
 class EmailVerificationDate(BaseModel):
     token: str

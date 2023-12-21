@@ -1,11 +1,9 @@
-import sys
-import smtplib, ssl
+import smtplib
+import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
-
-sys.path.append('/workspaces/wedding-api/app')
 
 from src.config.app_config import load_config
 
@@ -36,7 +34,7 @@ def send_verification_email(receiver_email: str, verification_token: str):
 
     email_content = template.render(template_data)
 
-    # TODO: Use jinja2 to create email 
+    # TODO: Use jinja2 to create email
     text = f'{verification_token}'
 
     # Convert into MIMEText objects
@@ -46,15 +44,16 @@ def send_verification_email(receiver_email: str, verification_token: str):
 
     context = ssl.create_default_context()
     with smtplib.SMTP(host=config.email.smtp_server, port=config.email.smtp_port) as server:
-        
+
         # Running localhost does not require TLS
         if config.email.smtp_server != 'localhost':
             server.starttls(context=context)
             server.login(user=config.email.smtp_username, password=config.email.smtp_password)
 
         server.sendmail(from_addr=sender_email,
-                        to_addrs=receiver_email, 
+                        to_addrs=receiver_email,
                         msg=message.as_string())
+
 
 if __name__ == '__main__':
     send_verification_email('rafael.mueller1@gmail.com', '123')

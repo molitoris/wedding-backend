@@ -33,6 +33,7 @@ ARG PYTHON_VERSION=3.10
 
 ENV PYENV_ROOT="${HOME}/.pyenv"
 ENV PATH="${PYENV_ROOT}/shims:${PYENV_ROOT}/bin:${HOME}/.local/bin:$PATH"
+ENV PYTHONPATH="${PYTHONPATH}:/workspaces/wedding-api/app:/workspaces/wedding-api/tests"
 
 RUN echo "done 0" \
     && curl https://pyenv.run | bash \

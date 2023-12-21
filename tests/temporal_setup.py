@@ -1,5 +1,4 @@
 import os
-import sys
 import pathlib
 import json
 import tempfile
@@ -8,8 +7,6 @@ from contextlib import contextmanager
 
 import pytest
 import pandas as pd
-
-sys.path.append('/workspaces/wedding-api/app')
 
 from src.setup.populate_db import populate_db
 from src.config.app_config import load_config

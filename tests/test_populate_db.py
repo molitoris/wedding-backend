@@ -1,8 +1,3 @@
-import sys
-
-sys.path.append('/workspaces/wedding-api/app')
-sys.path.append('/workspaces/wedding-api/tests')
-
 from src.config.app_config import load_config
 
 from tests.temporal_setup import setup_db, load_inivation_data
