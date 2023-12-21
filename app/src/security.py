@@ -2,9 +2,14 @@ import secrets
 import hashlib
 from passlib.context import CryptContext
 
-def generate_token(length: int=32):
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def generate_token(length: int = 32):
     random_bytes = secrets.token_bytes(length)
     return random_bytes.hex()
+
 
 def hash_token(input_string: str):
     sha256_hash = hashlib.sha256()
@@ -12,13 +17,14 @@ def hash_token(input_string: str):
     hashed_string = sha256_hash.hexdigest()
     return hashed_string
 
+
 def verify_token(clear_code: str, hashed_code: str) -> bool:
     return hash_token(clear_code) == hashed_code
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(input_string: str):
     return pwd_context.hash(input_string)
 
-def verify_password(secret, hashed_password)-> bool:
+
+def verify_password(secret, hashed_password) -> bool:
     return pwd_context.verify(secret=secret, hash=hashed_password)

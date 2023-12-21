@@ -1,16 +1,14 @@
-import sys
 from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 from jose import JWTError, jwt
-
-sys.path.append('/workspaces/wedding-api/app')
 
 from src.config.app_config import load_config
 from src.security import verify_password
-from src.database.db import Session, get_db
+from src.database.db import get_db
 from src.database.db_tables import User
 from src.database.models.user_status import UserStatus
 
@@ -38,7 +36,8 @@ def authenticate_user(email: str, password: str, db: Session):
     return user
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
+                           db: Session = Depends(get_db)):
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                           detail='Could not validate credentials',
                                           headers={'WWW-Authenticate': 'Bearer'})

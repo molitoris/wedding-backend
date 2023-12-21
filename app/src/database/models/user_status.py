@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class UserStatus(Enum):
     UNSEEN = 0      # User did not start registration
     UNVERIFIED = 1  # User did registration but did not verify email

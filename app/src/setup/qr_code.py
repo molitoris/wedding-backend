@@ -3,6 +3,7 @@ from PIL import Image
 from typing import Optional
 import pathlib
 
+
 class QrCodeImageGenerator:
 
     def __init__(self, logo: Optional[Image.Image] = None) -> None:
@@ -13,10 +14,9 @@ class QrCodeImageGenerator:
             basewidth = 100
 
             # adjust image size
-            wpercent = (basewidth/float(logo.size[0]))
-            hsize = int((float(logo.size[1])*float(wpercent)))
+            wpercent = (basewidth / float(logo.size[0]))
+            hsize = int((float(logo.size[1]) * float(wpercent)))
             self.logo = logo.resize((basewidth, hsize), Image.ANTIALIAS)
-
 
     def get_image(self, text: str, output_path: pathlib.Path):
         qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H)
@@ -31,6 +31,7 @@ class QrCodeImageGenerator:
             img.paste(self.logo, pos)
 
         img.save(output_path)
+
 
 if __name__ == '__main__':
     qr = QrCodeImageGenerator()

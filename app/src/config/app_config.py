@@ -4,11 +4,12 @@ from pydantic_settings import BaseSettings
 import pathlib
 import json
 
+
 class Setup(BaseModel):
     guest_list_filepath: pathlib.Path
     guest_registration_endpoint: str
     qr_code_output_path: pathlib.Path
-    
+
     invitation_token_size: int
     invitation_data_filename: str
     invitation_data_output_path: pathlib.Path
@@ -19,23 +20,26 @@ class Setup(BaseModel):
     def get_qr_code_output_path(self) -> pathlib.Path:
         return self.qr_code_output_path
 
+
 class EmailSettings(BaseModel):
     smtp_server: str
     smtp_port: int
     smtp_username: str
     smtp_password: str
 
+
 class ApiSettings(BaseModel):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
+
 
 class DatabaseSettings(BaseModel):
     path: pathlib.Path
     filename: str
 
     def get_file_path(self):
-     return self.path.joinpath(self.filename).absolute()
+        return self.path.joinpath(self.filename).absolute()
 
 
 class Config(BaseSettings):

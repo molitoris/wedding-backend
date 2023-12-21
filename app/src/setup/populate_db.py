@@ -1,13 +1,9 @@
 import os
-import sys
 import pandas as pd
-from pathlib import Path
 import json
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-sys.path.append('/workspaces/wedding-api/app')
 
 from src.security import generate_token, hash_token
 from src.database.db_tables import User, Guest, Role
@@ -24,7 +20,8 @@ def populate_db():
     config = load_config()
 
     # Create table
-    engine = create_engine(f"sqlite:///{config.db.get_file_path()}", echo=True, connect_args={"check_same_thread": False})
+    engine = create_engine(f"sqlite:///{config.db.get_file_path()}", echo=True,
+                           connect_args={"check_same_thread": False})
 
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -53,9 +50,11 @@ def populate_db():
         # Generate token
         invitation_token = generate_token(config.setup.invitation_token_size)
         inviation_hash = hash_token(invitation_token)
-        
+
         # Create user
-        user = User(invitation_hash=inviation_hash, status=UserStatus.UNSEEN, email_verification_hash=None, last_login=None, email=None, password_hash=None)
+        user = User(invitation_hash=inviation_hash, status=UserStatus.UNSEEN,
+                    email_verification_hash=None, last_login=None, email=None,
+                    password_hash=None)
 
         names = []
         # Store token with guest names
@@ -63,7 +62,10 @@ def populate_db():
 
         # Associate guest based on group id
         for id, row in df.loc[df['group'] == group_id, :].iterrows():
-            user.associated_guests.append(Guest(first_name=row.first_name, last_name=row.last_name, status=GuestStatus.UNDEFINED, food_option=0, allergies=''))
+            user.associated_guests.append(Guest(first_name=row.first_name,
+                                                last_name=row.last_name,
+                                                status=GuestStatus.UNDEFINED,
+                                                food_option=0, allergies=''))
 
             for role in row.roles.split(', '):
                 role = role.lower().strip()
@@ -76,12 +78,16 @@ def populate_db():
                 else:
                     raise AttributeError('Unknown role')
 
-            invitation_codes[inviation_hash]['guests'].append({'first_name': row.first_name, 'last_name': row.last_name, 'role': row. roles})
+            invitation_codes[inviation_hash]['guests'].append({'first_name': row.first_name,
+                                                               'last_name': row.last_name,
+                                                               'role': row. roles})
 
             names.append(f'{row.last_name}_{row.first_name}')
 
         # Generate QR Code for user registration
-        qr_generator.get_image(text=guest_registration_url + invitation_token, output_path=qr_code_path.joinpath('_'.join(names)).with_suffix('.png'))
+        file_name = '_'.join(names)
+        qr_generator.get_image(text=guest_registration_url + invitation_token,
+                               output_path=qr_code_path.joinpath(file_name).with_suffix('.png'))
 
         session.add(user)
 
