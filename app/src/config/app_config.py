@@ -13,6 +13,12 @@ class Setup(BaseModel):
     invitation_data_filename: str
     invitation_data_output_path: pathlib.Path
 
+    def get_invitation_file_path(self):
+        return self.invitation_data_output_path.joinpath(self.invitation_data_filename)
+
+    def get_qr_code_output_path(self) -> pathlib.Path:
+        return self.qr_code_output_path
+
 class EmailSettings(BaseModel):
     smtp_server: str
     smtp_port: int
