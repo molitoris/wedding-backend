@@ -16,9 +16,16 @@ def get_guest_list(*args, **kwargs):
     column_names = ['group', 'last_name', 'first_name', 'roles']
 
     data = [
-        ('0', 'Doe', 'John', 'guest'),
+        ('0', 'Johnson', 'Emily', 'admin'),
+
         ('1', 'Doe', 'Jane', 'witness'),
-        ('3', 'Perez', 'Juan', 'admin'),
+
+        ('2', 'Doe', 'John', 'witness'),
+
+        ('3', 'Thompson', 'Olivia', 'guest'),
+
+        ('4', 'Rodriguez', 'Ava ', 'guest'),
+        ('4', 'Perez', 'Juan', 'guest'),
         ]
     return pd.DataFrame(data=data, columns=column_names)
 
