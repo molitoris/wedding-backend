@@ -19,5 +19,5 @@ def test_send_verification_email(smtp_server):
     assert smtp_server.handler.count_messages() == prev_mail_count + 1
 
     act_content = smtp_server.handler.get_latest_message().get_html_content()
-    
+
     assert f'<a href="https://{exp_url}">' in act_content

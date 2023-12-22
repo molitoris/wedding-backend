@@ -64,6 +64,7 @@ def qr_code_patch(temp_dir):
     with patch('src.config.app_config.Setup.get_qr_code_output_path', lambda x: temp_dir):
         yield
 
+
 @contextmanager
 def invitation_path_patch(temp_file):
     with patch('src.config.app_config.Setup.get_invitation_file_path', lambda x: temp_file.name):
@@ -74,8 +75,9 @@ def invitation_path_patch(temp_file):
 def setup_db():
     os.environ['APP_ENV'] = 'testing'
 
-    with guest_list_patch(), temp_file() as sql_file, temp_file() as invitation_file, temp_directory() as temp_dir , \
-        qr_code_patch(temp_dir), sql_file_path_patch(sql_file), invitation_path_patch(invitation_file):
+    with guest_list_patch(), temp_file() as sql_file, temp_file() as invitation_file, \
+        temp_directory() as temp_dir , qr_code_patch(temp_dir), \
+        sql_file_path_patch(sql_file), invitation_path_patch(invitation_file):
         populate_db()
 
         yield
