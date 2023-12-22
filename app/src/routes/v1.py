@@ -1,13 +1,16 @@
+from datetime import timedelta
+from typing import Annotated, List
+import logging
+
 from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from datetime import timedelta
-from typing import Annotated
 
 from src.routes.api_utils import authenticate_user, create_access_token, get_current_active_user
-from src.routes.dto import EmailVerificationDate, Guest, LoginData, RegistrationData
+from src.routes.dto import EmailVerificationDate, Guest as GuestDto, LoginData, RegistrationData
 from src.database.db import get_db
-from src.database.db_tables import User
+from src.database.models.guest_status import GuestStatus
+from src.database.db_tables import User, Guest
 from src.database.models.user_status import UserStatus
 from src.security import generate_token, hash_token, hash_password
 from src.email_sender import send_verification_email
@@ -117,7 +120,46 @@ async def login(data: LoginData, db: Session = Depends(get_db)):
 async def guest_info(current_user: Annotated[User, Depends(get_current_active_user)]):
     guests = []
     for guest in current_user.associated_guests:
-        guests.append(Guest(id=guest.id, first_name=guest.first_name, last_name=guest.last_name,
-                            food_option=guest.food_option, allergies=guest.allergies))
+        status = not (guest.status == GuestStatus.EXCUSED)
+
+        guests.append(GuestDto(id=guest.id, first_name=guest.first_name,
+                               last_name=guest.last_name, joins=status,
+                               food_option=guest.food_option,
+                               allergies=guest.allergies))
 
     return {'guests': guests}
+
+
+@app_v1.post('/guest-info')
+async def set_guest_info(data: List[GuestDto],
+                         current_user: Annotated[User, Depends(get_current_active_user)],
+                         db: Session = Depends(get_db)):
+
+    # Check if only guest associated with the logged in user are changed
+    allowed_ids = set(associated_guest.id for associated_guest in current_user.associated_guests)
+    received_ids = set(guest.id for guest in data)
+
+    if received_ids - allowed_ids:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Incorrect guest",
+                            headers={"WWW-Autenticate": "Bearer"})
+
+    try:
+        db.begin()
+
+        for guest_dto in data:
+            user = db.get(Guest).filter_by(id=guest_dto.id).first()
+
+            user.food_option = guest_dto.food_option
+            user.allergies = guest_dto.allergies
+            user.status = GuestStatus.REGISTERED if guest_dto.joins else GuestStatus.EXCUSED
+
+        db.commit()
+    except Exception:
+        logging.error(f'Failed to register user {guest_dto}')
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="Failed to register guests",
+                            headers={"WWW-Autenticate": "Bearer"})
+
+    return {f'Registered {len(guest_dto)} guests'}

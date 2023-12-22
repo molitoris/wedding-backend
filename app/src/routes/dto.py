@@ -20,5 +20,6 @@ class Guest(BaseModel):
     id: int
     first_name: str
     last_name: str
+    joins: bool
     food_option: int
     allergies: str

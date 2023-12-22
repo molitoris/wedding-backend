@@ -76,7 +76,7 @@ def populate_db():
                 elif role == 'admin':
                     user.role.append(Role(name=UserRole.ADMIN))
                 else:
-                    raise AttributeError('Unknown role')
+                    raise AttributeError(f'Unknown role {role}')
 
             invitation_codes[inviation_hash]['guests'].append({'first_name': row.first_name,
                                                                'last_name': row.last_name,

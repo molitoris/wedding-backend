@@ -172,3 +172,9 @@ def test_if_registered_user_can_login(smtp_server, setup_backend):
     response = client.post('/login', json=login_data.model_dump())
     assert response.status_code == 200
     assert 'access_token' in response.json()
+
+    token = response.json()['access_token']
+    response = client.get('/guest-info', headers={'Authorization': f'Bearer {token}',
+                                                  'Content-Type': 'application/json' })
+    
+    assert response.status_code == 200
