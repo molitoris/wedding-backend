@@ -98,7 +98,7 @@ def test_if_user_can_register_with_another_email_before_validation(smtp_server, 
 
     assert second_token is not None
     assert act_email == exp_email1
-    
+
     # Ensure token send to first email address (wrong) is no longer valid
     data = EmailVerificationDate(token=first_token)
     response = client.post('/email-verification', json=data.model_dump())
