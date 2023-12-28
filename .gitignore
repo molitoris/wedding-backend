@@ -3,3 +3,5 @@
 
 __pycahce__/
 *.py[cod]
+
+data/output/

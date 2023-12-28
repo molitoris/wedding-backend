@@ -1,8 +1,10 @@
 import os
-from pydantic import BaseModel
-from pydantic_settings import BaseSettings
 import pathlib
 import json
+import logging
+
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 
 
 class Setup(BaseModel):
@@ -58,8 +60,13 @@ def load_config(data=None):
     env = os.getenv("APP_ENV", "production")
 
     if env == 'production':
+        logging.info(f'Using {env} config')
         file = pathlib.Path('./config/config.json')
+    elif env == 'dev':
+        logging.warning(f'Using {env} config')
+        file = pathlib.Path('./config/config_development.json')
     elif env == 'testing':
+        logging.warning(f'Using {env} config')
         file = pathlib.Path('./config/config_testing.json')
 
     if not file.exists():
