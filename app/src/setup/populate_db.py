@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import json
+import pathlib
+import logging
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -19,16 +21,23 @@ from src.config.app_config import load_config
 def populate_db():
     config = load_config()
 
+    sql_file = pathlib.Path(config.db.get_file_path())
+
+    sql_file.parent.mkdir(parents=True, exist_ok=True)
+
     # Create table
-    engine = create_engine(f"sqlite:///{config.db.get_file_path()}", echo=True,
+    engine = create_engine(f"sqlite:///{sql_file}", echo=True,
                            connect_args={"check_same_thread": False})
 
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     Base.metadata.create_all(engine)
 
-    print(config.setup.guest_list_filepath.absolute())
-    df = pd.read_csv(config.setup.guest_list_filepath, header=0, delimiter=';')
+    guest_list_file_path = config.setup.guest_list_filepath
+
+    logging.info(f'Loading guest list from {guest_list_file_path}')
+
+    df = pd.read_csv(guest_list_file_path, header=0, delimiter=';')
 
     guest_registration_url = config.frontend_base_url + config.setup.guest_registration_endpoint
 
@@ -100,3 +109,5 @@ def populate_db():
 
 if __name__ == '__main__':
     os.environ['APP_ENV'] = 'production'
+    # os.environ['APP_ENV'] = 'dev'
+    populate_db()
