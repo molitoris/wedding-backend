@@ -23,3 +23,5 @@ class Guest(BaseModel):
     joins: bool
     food_option: int
     allergies: str
+    favoriteFairyTaleCharacter: str
+    favoriteTool: str

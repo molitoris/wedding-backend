@@ -7,6 +7,7 @@ from jose import jwt
 from src.config.app_config import Config
 from src.routes.dto import RegistrationData, Guest as GuestDto, EmailVerificationDate
 from src.database.db_tables import User, Guest
+from src.database.models.food_options import FoodOption
 from src.database.models.user_status import UserStatus
 from src.database.models.guest_status import GuestStatus
 from src.security import hash_token, generate_token, hash_password, verify_password
@@ -78,14 +79,16 @@ class Service():
 
             guests.append(GuestDto(id=guest.id, first_name=guest.first_name,
                                    last_name=guest.last_name, joins=status,
-                                   food_option=guest.food_option,
-                                   allergies=guest.allergies))
+                                   food_option=guest.food_option.value,
+                                   allergies=guest.allergies,
+                                   favoriteFairyTaleCharacter=guest.favoriteFairyTaleCharacter,
+                                   favoriteTool=guest.favoriteTool))
         return guests
 
-    def update_guests_of_user(self, guests: List[GuestDto], user: User) -> None:
+    def update_guests_of_user(self, guest_dtos: List[GuestDto], user: User) -> None:
         # Check if only guest associated with the logged in user are changed
         allowed_ids = set(associated_guest.id for associated_guest in user.associated_guests)
-        received_ids = set(guest.id for guest in guests)
+        received_ids = set(guest.id for guest in guest_dtos)
 
         if received_ids - allowed_ids:
             raise AttributeError()
@@ -93,16 +96,19 @@ class Service():
         try:
             self.db.begin()
 
-            for guest_dto in guests:
-                user = self.db.get(Guest).filter_by(id=guest_dto.id).first()
+            for guest_dto in guest_dtos:
+                guest = self.db.query(Guest).filter_by(id=guest_dto.id).first()
 
-                user.food_option = guest_dto.food_option
-                user.allergies = guest_dto.allergies
-                user.status = GuestStatus.REGISTERED if guest_dto.joins else GuestStatus.EXCUSED
+                guest.status = GuestStatus.REGISTERED if guest_dto.joins else GuestStatus.EXCUSED
+
+                guest.food_option = FoodOption(guest_dto.food_option)
+                guest.allergies = guest_dto.allergies
+                guest.favoriteFairyTaleCharacter = guest_dto.favoriteFairyTaleCharacter
+                guest.favoriteTool = guest_dto.favoriteTool
 
             self.db.commit()
         except Exception:
-            logging.error(f'Failed to register user {guest_dto}')
+            logging.error(f'Failed to register user {guest_dtos}')
             self.db.rollback()
             raise AttributeError()
 

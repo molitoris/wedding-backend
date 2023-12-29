@@ -16,7 +16,7 @@ app_v1 = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:4200",
-    "http://172.18.0.1",
+    "http://172.18.0.2",
 ]
 
 config = load_config()
@@ -26,7 +26,7 @@ if config.frontend_base_url:
 
 app_v1.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -92,7 +92,7 @@ async def set_guest_info(data: List[GuestDto],
                          service: Service = Depends(get_serivce)) -> str:
 
     try:
-        no_updated_guests = service.update_guests_of_user(guests=data, user=current_user)
+        no_updated_guests = service.update_guests_of_user(guest_dtos=data, user=current_user)
         return {'Guests': f'Registered {len(no_updated_guests)} guests'}
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
