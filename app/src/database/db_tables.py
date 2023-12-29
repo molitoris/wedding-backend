@@ -1,9 +1,10 @@
 from sqlalchemy import Table, Column, ForeignKey, Enum, Integer, String
 from sqlalchemy.orm import relationship, mapped_column
 
-from .models.guest_status import GuestStatus
-from .models.user_status import UserStatus
-from .models.user_role import UserRole
+from src.database.models.guest_status import GuestStatus
+from src.database.models.user_status import UserStatus
+from src.database.models.user_role import UserRole
+from src.database.models.food_options import FoodOption
 from src.database.db_base import Base
 
 
@@ -52,10 +53,12 @@ class Guest(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String)
     last_name = Column(String)
-    # TODO(RSM): Exchange with enum
-    food_option = Column(Integer)
+    food_option = Column(Enum(FoodOption))
     allergies = Column(String)
     status = Column(Enum(GuestStatus))
+    favoriteFairyTaleCharacter = Column(String)
+    favoriteTool = Column(String)
+
     # Relationship
 
     user_id = mapped_column(ForeignKey('user_table.id'))

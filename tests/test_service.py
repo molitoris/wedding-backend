@@ -4,10 +4,12 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.business_logic.services import Service
-from src.database.db_tables import User
+from src.database.db_tables import User, Guest
+from src.database.models.food_options import FoodOption
 from src.database.models.user_status import UserStatus
+from src.database.models.guest_status import GuestStatus
 from src.config.app_config import load_config
-from src.routes.dto import RegistrationData, EmailVerificationDate
+from src.routes.dto import RegistrationData, EmailVerificationDate, Guest as GuestDto
 from src.security import hash_token, verify_password, generate_token
 
 
@@ -134,3 +136,72 @@ def test_if_verify_email_handles_incorrect_states(status, mock_db):
 
     with pytest.raises(AttributeError):
         s.verify_email(email_verification=data)
+
+
+def test_if_can_get_initial_guest_of_user(mock_db):
+    os.environ['APP_ENV'] = 'testing'
+    config = load_config()
+
+    g1 = Guest()
+    g1.id = 0
+    g1.first_name = ''
+    g1.last_name = ''
+    g1.food_option = FoodOption.UNDEFINED
+    g1.allergies = ''
+    g1.status = GuestStatus.UNDEFINED
+    g1.favoriteFairyTaleCharacter = ''
+    g1.favoriteTool = ''
+
+    db_user = User()
+    db_user.associated_guests = [g1]
+
+    db, _, _ = mock_db
+
+    s = Service(db=db, config=config)
+
+    guests = s.get_guests_of_user(db_user)
+
+    assert len(db_user.associated_guests) == len(guests)
+    assert guests[0].joins == True
+    assert guests[0].allergies == g1.allergies
+    assert guests[0].food_option == g1.food_option.value
+
+
+def test_if_can_update_initial_guest_of_user(mock_db):
+    os.environ['APP_ENV'] = 'testing'
+    config = load_config()
+
+    g1 = Guest()
+    g1.id = 0
+    g1.first_name = ''
+    g1.last_name = ''
+    g1.food_option = FoodOption.UNDEFINED
+    g1.allergies = ''
+    g1.status = GuestStatus.UNDEFINED
+    g1.favoriteFairyTaleCharacter = ''
+    g1.favoriteTool = ''
+
+    guest_dto = GuestDto(id=g1.id, first_name='', last_name='', joins=True, food_option=FoodOption.VEGETARIAN.value, allergies='Crustaceans', 
+                         favoriteFairyTaleCharacter='Cinderella', favoriteTool='hammer')
+
+    db_user = User()
+    db_user.associated_guests = [g1]
+
+    db, _, result = mock_db
+    result.first.return_value = g1
+
+    s = Service(db=db, config=config)
+
+    s.update_guests_of_user(guest_dtos=[guest_dto], user=db_user)
+
+    assert g1.food_option == FoodOption.VEGETARIAN
+    assert g1.favoriteFairyTaleCharacter == guest_dto.favoriteFairyTaleCharacter
+    assert g1.favoriteTool == guest_dto.favoriteTool
+    
+    guests = s.get_guests_of_user(db_user)
+
+    assert len(db_user.associated_guests) == len(guests)
+    assert guests[0].joins == True
+    assert guests[0].allergies == g1.allergies
+    assert guests[0].food_option == g1.food_option.value
+
