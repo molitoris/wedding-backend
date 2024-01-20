@@ -149,8 +149,8 @@ def test_if_can_get_initial_guest_of_user(mock_db):
     g1.food_option = FoodOption.UNDEFINED
     g1.allergies = ''
     g1.status = GuestStatus.UNDEFINED
-    g1.favoriteFairyTaleCharacter = ''
-    g1.favoriteTool = ''
+    g1.favorite_fairy_tale_character = ''
+    g1.favorite_tool = ''
 
     db_user = User()
     db_user.associated_guests = [g1]
@@ -178,11 +178,11 @@ def test_if_can_update_initial_guest_of_user(mock_db):
     g1.food_option = FoodOption.UNDEFINED
     g1.allergies = ''
     g1.status = GuestStatus.UNDEFINED
-    g1.favoriteFairyTaleCharacter = ''
-    g1.favoriteTool = ''
+    g1.favorite_fairy_tale_character = ''
+    g1.favorite_tool = ''
 
     guest_dto = GuestDto(id=g1.id, first_name='', last_name='', joins=True, food_option=FoodOption.VEGETARIAN.value, allergies='Crustaceans', 
-                         favoriteFairyTaleCharacter='Cinderella', favoriteTool='hammer')
+                         favorite_fairy_tale_character='Cinderella', favorite_tool='hammer')
 
     db_user = User()
     db_user.associated_guests = [g1]
@@ -195,8 +195,8 @@ def test_if_can_update_initial_guest_of_user(mock_db):
     s.update_guests_of_user(guest_dtos=[guest_dto], user=db_user)
 
     assert g1.food_option == FoodOption.VEGETARIAN
-    assert g1.favoriteFairyTaleCharacter == guest_dto.favoriteFairyTaleCharacter
-    assert g1.favoriteTool == guest_dto.favoriteTool
+    assert g1.favorite_fairy_tale_character == guest_dto.favorite_fairy_tale_character
+    assert g1.favorite_tool == guest_dto.favorite_tool
     
     guests = s.get_guests_of_user(db_user)
 

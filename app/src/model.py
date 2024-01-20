@@ -22,8 +22,8 @@ class Guest(BaseModel):
     food_option: FoodOption = FoodOption.UNDEFINED
     allergies: List[str] = Field(default_factory=list)
     status: GuestStatus = GuestStatus.UNDEFINED
-    favoriteFairyTaleCharacter: str = ''
-    favoriteTool: str = ''
+    favorite_fairy_tale_character: str = ''
+    favorite_tool: str = ''
 
 
 class RegistrationStatus(IntEnum):

@@ -76,7 +76,7 @@ def populate_db():
                                                 last_name=row.last_name,
                                                 status=GuestStatus.UNDEFINED,
                                                 food_option=FoodOption.UNDEFINED, allergies='',
-                                                favoriteFairyTaleCharacter='', favoriteTool=''))
+                                                favorite_fairy_tale_character='', favorite_tool=''))
 
             for role in row.roles.split(', '):
                 role = role.lower().strip()
