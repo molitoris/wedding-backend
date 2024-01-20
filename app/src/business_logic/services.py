@@ -81,8 +81,8 @@ class Service():
                                    last_name=guest.last_name, joins=status,
                                    food_option=guest.food_option.value,
                                    allergies=guest.allergies,
-                                   favoriteFairyTaleCharacter=guest.favoriteFairyTaleCharacter,
-                                   favoriteTool=guest.favoriteTool))
+                                   favorite_fairy_tale_character=guest.favorite_fairy_tale_character,
+                                   favorite_tool=guest.favorite_tool))
         return guests
 
     def update_guests_of_user(self, guest_dtos: List[GuestDto], user: User) -> None:
@@ -103,8 +103,8 @@ class Service():
 
                 guest.food_option = FoodOption(guest_dto.food_option)
                 guest.allergies = guest_dto.allergies
-                guest.favoriteFairyTaleCharacter = guest_dto.favoriteFairyTaleCharacter
-                guest.favoriteTool = guest_dto.favoriteTool
+                guest.favorite_fairy_tale_character = guest_dto.favorite_fairy_tale_character
+                guest.favorite_tool = guest_dto.favorite_tool
 
             self.db.commit()
         except Exception:

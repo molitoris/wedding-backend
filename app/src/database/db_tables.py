@@ -56,8 +56,8 @@ class Guest(Base):
     food_option = Column(Enum(FoodOption))
     allergies = Column(String)
     status = Column(Enum(GuestStatus))
-    favoriteFairyTaleCharacter = Column(String)
-    favoriteTool = Column(String)
+    favorite_fairy_tale_character = Column(String)
+    favorite_tool = Column(String)
 
     # Relationship
 
