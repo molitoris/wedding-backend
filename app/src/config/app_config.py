@@ -61,7 +61,7 @@ def load_config(data=None):
 
     if env == 'production':
         logging.info(f'Using {env} config')
-        file = pathlib.Path('./config/config.json')
+        file = pathlib.Path('/config/config.json')
     elif env == 'dev':
         logging.warning(f'Using {env} config')
         file = pathlib.Path('./config/config_development.json')
