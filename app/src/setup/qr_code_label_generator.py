@@ -1,12 +1,15 @@
-from docx import Document
-from docx.shared import Mm, Pt, RGBColor
-from docx.enum.table import WD_ROW_HEIGHT_RULE
+import os
 import json
 import pathlib
 import math
 import tempfile
 
+from docx import Document
+from docx.shared import Mm, Pt
+from docx.enum.table import WD_ROW_HEIGHT_RULE
+
 from src.setup.qr_code import QrCodeImageGenerator
+from src.config.app_config import load_config
 
 
 class QrCodeLabelGenerator:
@@ -15,7 +18,7 @@ class QrCodeLabelGenerator:
         self.qr_generator = QrCodeImageGenerator()
         self.qr_code_path = tempfile.TemporaryDirectory()
 
-    def create_document(self, label_data, output_path, url):
+    def create_document(self, label_data, output_path: pathlib.Path, url):
         document = Document()
 
         style = document.styles['Normal']
@@ -79,16 +82,18 @@ class QrCodeLabelGenerator:
 
 
 if __name__ == '__main__':
-    
+    os.environ['APP_ENV'] = 'production'
+    config = load_config()
 
-    filepath = pathlib.Path('data/output/invitation_data.txt')
-    output_path = 'qr_code_labels.docx'
+    filepath = config.db.path.joinpath("invitation_data.txt")
+    output_path = config.db.path.joinpath('qr_code_labels.docx')
 
-    url = 'https://wedding.molitoris.org'
+    url = config.frontend_base_url
 
     with open(file=filepath, mode='r') as f:
         json_data = json.load(f)
 
     generator = QrCodeLabelGenerator()
 
-    generator.create_document(json_data, url=url, output_path=output_path)
+    generator.create_document(json_data, url=url,
+                              output_path=output_path)
