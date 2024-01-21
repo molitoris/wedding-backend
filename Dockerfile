@@ -33,7 +33,7 @@ RUN poetry install --without dev --no-root \
 
 COPY ./app ./app
 
-RUN poetry install --without dev
+# RUN poetry install --without dev
 
 ENV PYTHONPATH /workspaces/wedding-api/app/
 
