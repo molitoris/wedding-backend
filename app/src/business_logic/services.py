@@ -8,6 +8,7 @@ from src.config.app_config import Config
 from src.routes.dto import RegistrationData, Guest as GuestDto, EmailVerificationDate
 from src.database.db_tables import User, Guest
 from src.database.models.food_options import FoodOption
+from src.database.models.dessert_options import DessertOption
 from src.database.models.user_status import UserStatus
 from src.database.models.guest_status import GuestStatus
 from src.security import hash_token, generate_token, hash_password, verify_password
@@ -80,6 +81,7 @@ class Service():
             guests.append(GuestDto(id=guest.id, first_name=guest.first_name,
                                    last_name=guest.last_name, joins=status,
                                    food_option=guest.food_option.value,
+                                   dessert_option=guest.dessert_option.value,
                                    allergies=guest.allergies,
                                    favorite_fairy_tale_character=guest.favorite_fairy_tale_character,
                                    favorite_tool=guest.favorite_tool))
@@ -101,6 +103,7 @@ class Service():
                 guest.status = GuestStatus.REGISTERED if guest_dto.joins else GuestStatus.EXCUSED
 
                 guest.food_option = FoodOption(guest_dto.food_option)
+                guest.dessert_option = DessertOption(guest_dto.dessert_option)
                 guest.allergies = guest_dto.allergies
                 guest.favorite_fairy_tale_character = guest_dto.favorite_fairy_tale_character
                 guest.favorite_tool = guest_dto.favorite_tool

@@ -22,6 +22,7 @@ class Guest(BaseModel):
     last_name: str
     joins: bool
     food_option: int
+    dessert_option: int
     allergies: str
     favorite_fairy_tale_character: str
     favorite_tool: str
