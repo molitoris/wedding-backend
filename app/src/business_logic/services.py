@@ -85,7 +85,7 @@ class Service():
                                    favorite_tool=guest.favorite_tool))
         return guests
 
-    def update_guests_of_user(self, guest_dtos: List[GuestDto], user: User) -> None:
+    def update_guests_of_user(self, guest_dtos: List[GuestDto], user: User) -> int:
         # Check if only guest associated with the logged in user are changed
         allowed_ids = set(associated_guest.id for associated_guest in user.associated_guests)
         received_ids = set(guest.id for guest in guest_dtos)
@@ -94,8 +94,7 @@ class Service():
             raise AttributeError()
 
         try:
-            self.db.begin()
-
+            no_of_guests = 0
             for guest_dto in guest_dtos:
                 guest = self.db.query(Guest).filter_by(id=guest_dto.id).first()
 
@@ -105,10 +104,12 @@ class Service():
                 guest.allergies = guest_dto.allergies
                 guest.favorite_fairy_tale_character = guest_dto.favorite_fairy_tale_character
                 guest.favorite_tool = guest_dto.favorite_tool
+                no_of_guests += 1
 
             self.db.commit()
-        except Exception:
-            logging.error(f'Failed to register user {guest_dtos}')
+            return no_of_guests
+        except Exception as e:
+            logging.error(f'Failed to register user {guest_dtos}. {e}')
             self.db.rollback()
             raise AttributeError()
 

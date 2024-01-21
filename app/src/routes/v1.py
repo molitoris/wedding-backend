@@ -89,11 +89,11 @@ async def guest_info(current_user: Annotated[User, Depends(get_current_active_us
 @app_v1.post('/guest-info')
 async def set_guest_info(data: List[GuestDto],
                          current_user: Annotated[User, Depends(get_current_active_user)],
-                         service: Service = Depends(get_serivce)) -> str:
+                         service: Service = Depends(get_serivce)):
 
     try:
         no_updated_guests = service.update_guests_of_user(guest_dtos=data, user=current_user)
-        return {'Guests': f'Registered {len(no_updated_guests)} guests'}
+        return {'Guests': f'Registered {no_updated_guests} guests'}
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect guest",
