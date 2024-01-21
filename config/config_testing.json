@@ -3,8 +3,8 @@
     "guest_list_filepath": "./tests/raw/guest_list.csv",
     "guest_registration_endpoint": "/registration?token=",
     "qr_code_output_path": "./tests/data/qr_codes",
-    "invitation_token_size": 8,
-    "invitation_data_filename": "inviation_data.txt",
+    "invitation_token_size": 6,
+    "invitation_data_filename": "invitation_data.txt",
     "invitation_data_output_path": "./tests/data"
   },
   "email": {
