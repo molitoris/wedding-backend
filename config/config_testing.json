@@ -22,5 +22,5 @@
     "path": "./tests/data",
     "filename": "db.sqlite"
   },
-  "frontend_base_url": "localhost:4200"
+  "frontend_base_url": "http://localhost:4200"
 }
