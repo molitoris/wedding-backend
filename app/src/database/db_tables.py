@@ -5,6 +5,7 @@ from src.database.models.guest_status import GuestStatus
 from src.database.models.user_status import UserStatus
 from src.database.models.user_role import UserRole
 from src.database.models.food_options import FoodOption
+from src.database.models.dessert_options import DessertOption
 from src.database.db_base import Base
 
 
@@ -54,6 +55,7 @@ class Guest(Base):
     first_name = Column(String)
     last_name = Column(String)
     food_option = Column(Enum(FoodOption))
+    dessert_option = Column(Enum(DessertOption))
     allergies = Column(String)
     status = Column(Enum(GuestStatus))
     favorite_fairy_tale_character = Column(String)
