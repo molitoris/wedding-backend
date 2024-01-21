@@ -35,6 +35,6 @@ COPY ./app ./app
 
 RUN poetry install --without dev
 
-ENV PYTHONPATH="/workspaces/wedding-api/app/"
+ENV PYTHONPATH /workspaces/wedding-api/app/
 
 CMD ["poetry", "run", "uvicorn", "app.src.main:app_v1", "--host", "0.0.0.0", "--port", "8000"]
