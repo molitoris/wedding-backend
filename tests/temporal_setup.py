@@ -30,7 +30,7 @@ def get_guest_list(*args, **kwargs):
     return pd.DataFrame(data=data, columns=column_names)
 
 
-def load_inivation_data(path: pathlib.Path):
+def load_invitation_data(path: pathlib.Path):
     with open(path, 'r') as f:
         return json.load(f)
 
@@ -86,4 +86,4 @@ def setup_db():
 @pytest.fixture
 def setup_backend(setup_db):
     config = load_config()
-    return load_inivation_data(config.setup.get_invitation_file_path())
+    return load_invitation_data(config.setup.get_invitation_file_path())
