@@ -11,6 +11,7 @@ from src.security import generate_token, hash_token
 from src.database.db_tables import User, Guest, Role
 from src.database.models.user_status import UserStatus
 from src.database.models.food_options import FoodOption
+from src.database.models.dessert_options import DessertOption
 from src.database.models.guest_status import GuestStatus
 from src.database.models.user_role import UserRole
 from src.setup.qr_code import QrCodeImageGenerator
@@ -75,7 +76,9 @@ def populate_db():
             user.associated_guests.append(Guest(first_name=row.first_name,
                                                 last_name=row.last_name,
                                                 status=GuestStatus.UNDEFINED,
-                                                food_option=FoodOption.UNDEFINED, allergies='',
+                                                food_option=FoodOption.UNDEFINED,
+                                                dessert_option=DessertOption.UNDEFINED,
+                                                allergies='',
                                                 favorite_fairy_tale_character='', favorite_tool=''))
 
             for role in row.roles.split(', '):

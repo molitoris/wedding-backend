@@ -6,6 +6,7 @@ import pytest
 from src.business_logic.services import Service
 from src.database.db_tables import User, Guest
 from src.database.models.food_options import FoodOption
+from src.database.models.dessert_options import DessertOption
 from src.database.models.user_status import UserStatus
 from src.database.models.guest_status import GuestStatus
 from src.config.app_config import load_config
@@ -147,6 +148,7 @@ def test_if_can_get_initial_guest_of_user(mock_db):
     g1.first_name = ''
     g1.last_name = ''
     g1.food_option = FoodOption.UNDEFINED
+    g1.dessert_option = DessertOption.UNDEFINED
     g1.allergies = ''
     g1.status = GuestStatus.UNDEFINED
     g1.favorite_fairy_tale_character = ''
@@ -176,13 +178,19 @@ def test_if_can_update_initial_guest_of_user(mock_db):
     g1.first_name = ''
     g1.last_name = ''
     g1.food_option = FoodOption.UNDEFINED
+    g1.dessert_option = DessertOption.UNDEFINED
     g1.allergies = ''
     g1.status = GuestStatus.UNDEFINED
     g1.favorite_fairy_tale_character = ''
     g1.favorite_tool = ''
 
-    guest_dto = GuestDto(id=g1.id, first_name='', last_name='', joins=True, food_option=FoodOption.VEGETARIAN.value, allergies='Crustaceans', 
-                         favorite_fairy_tale_character='Cinderella', favorite_tool='hammer')
+    guest_dto = GuestDto(id=g1.id, first_name='', last_name='',
+                         joins=True, 
+                         food_option=FoodOption.VEGETARIAN.value,
+                         dessert_option=DessertOption.CHEESE.value,
+                         allergies='Crustaceans', 
+                         favorite_fairy_tale_character='Cinderella', 
+                         favorite_tool='hammer')
 
     db_user = User()
     db_user.associated_guests = [g1]
@@ -195,6 +203,7 @@ def test_if_can_update_initial_guest_of_user(mock_db):
     s.update_guests_of_user(guest_dtos=[guest_dto], user=db_user)
 
     assert g1.food_option == FoodOption.VEGETARIAN
+    assert g1.dessert_option == DessertOption.CHEESE
     assert g1.favorite_fairy_tale_character == guest_dto.favorite_fairy_tale_character
     assert g1.favorite_tool == guest_dto.favorite_tool
     
