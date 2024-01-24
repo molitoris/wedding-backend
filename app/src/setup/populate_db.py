@@ -3,6 +3,7 @@ import pandas as pd
 import json
 import pathlib
 import logging
+from typing import List
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -13,11 +14,25 @@ from src.database.models.user_status import UserStatus
 from src.database.models.food_options import FoodOption
 from src.database.models.dessert_options import DessertOption
 from src.database.models.guest_status import GuestStatus
-from src.database.models.user_role import UserRole
+from src.database.models.guest_role import GuestRole
 from src.setup.qr_code import QrCodeImageGenerator
 from src.database.db_base import Base
 
 from src.config.app_config import load_config
+
+def _get_role(row) -> List[Role]:
+    roles = []
+    for role in row.roles.split(', '):
+        role = role.lower().strip()
+        if role == 'guest':
+            roles.append(Role(name=GuestRole.GUEST))
+        elif role == 'witness':
+            roles.append(Role(name=GuestRole.WITNESS))
+        elif role == 'admin':
+            roles.append(Role(name=GuestRole.ADMIN))
+        else:
+            raise AttributeError(f'Unknown role {role}')
+    return roles
 
 
 def populate_db():
@@ -72,25 +87,18 @@ def populate_db():
         invitation_codes[inviation_hash] = {'token': invitation_token, 'guests': []}
 
         # Associate guest based on group id
-        for id, row in df.loc[df['group'] == group_id, :].iterrows():
+        for _, row in df.loc[df['group'] == group_id, :].iterrows():
+            roles = _get_role(row)
             user.associated_guests.append(Guest(first_name=row.first_name,
                                                 last_name=row.last_name,
                                                 status=GuestStatus.UNDEFINED,
                                                 food_option=FoodOption.UNDEFINED,
                                                 dessert_option=DessertOption.UNDEFINED,
                                                 allergies='',
-                                                favorite_fairy_tale_character='', favorite_tool=''))
+                                                favorite_fairy_tale_character='',
+                                                favorite_tool='',
+                                                roles=roles))
 
-            for role in row.roles.split(', '):
-                role = role.lower().strip()
-                if role == 'guest':
-                    user.role.append(Role(name=UserRole.GUEST))
-                elif role == 'witness':
-                    user.role.append(Role(name=UserRole.WITNESS))
-                elif role == 'admin':
-                    user.role.append(Role(name=UserRole.ADMIN))
-                else:
-                    raise AttributeError(f'Unknown role {role}')
 
             invitation_codes[inviation_hash]['guests'].append({'first_name': row.first_name,
                                                                'last_name': row.last_name,
