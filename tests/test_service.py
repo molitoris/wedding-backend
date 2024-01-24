@@ -4,7 +4,8 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.business_logic.services import Service
-from src.database.db_tables import User, Guest
+from src.database.db_tables import User, Guest, Role
+from src.database.models.guest_role import GuestRole
 from src.database.models.food_options import FoodOption
 from src.database.models.dessert_options import DessertOption
 from src.database.models.user_status import UserStatus
@@ -147,6 +148,7 @@ def test_if_can_get_initial_guest_of_user(mock_db):
     g1.id = 0
     g1.first_name = ''
     g1.last_name = ''
+    g1.roles = [Role(name=GuestRole.GUEST)]
     g1.food_option = FoodOption.UNDEFINED
     g1.dessert_option = DessertOption.UNDEFINED
     g1.allergies = ''
@@ -161,12 +163,13 @@ def test_if_can_get_initial_guest_of_user(mock_db):
 
     s = Service(db=db, config=config)
 
-    guests = s.get_guests_of_user(db_user)
+    response = s.get_guests_of_user(db_user)
 
-    assert len(db_user.associated_guests) == len(guests)
-    assert guests[0].joins == True
-    assert guests[0].allergies == g1.allergies
-    assert guests[0].food_option == g1.food_option.value
+    assert len(db_user.associated_guests) == len(response.guests)
+    assert response.guests[0].joins == True
+    assert response.guests[0].roles == [GuestRole.GUEST.value]
+    assert response.guests[0].allergies == g1.allergies
+    assert response.guests[0].food_option == g1.food_option.value
 
 
 def test_if_can_update_initial_guest_of_user(mock_db):
@@ -177,6 +180,7 @@ def test_if_can_update_initial_guest_of_user(mock_db):
     g1.id = 0
     g1.first_name = ''
     g1.last_name = ''
+    g1.roles = []
     g1.food_option = FoodOption.UNDEFINED
     g1.dessert_option = DessertOption.UNDEFINED
     g1.allergies = ''
@@ -184,7 +188,9 @@ def test_if_can_update_initial_guest_of_user(mock_db):
     g1.favorite_fairy_tale_character = ''
     g1.favorite_tool = ''
 
-    guest_dto = GuestDto(id=g1.id, first_name='', last_name='',
+    guest_dto = GuestDto(id=g1.id,
+                         first_name='', last_name='',
+                         roles=[GuestRole.GUEST.value],
                          joins=True, 
                          food_option=FoodOption.VEGETARIAN.value,
                          dessert_option=DessertOption.CHEESE.value,
@@ -202,15 +208,15 @@ def test_if_can_update_initial_guest_of_user(mock_db):
 
     s.update_guests_of_user(guest_dtos=[guest_dto], user=db_user)
 
+    assert g1.roles == []  # Roles are not updated
     assert g1.food_option == FoodOption.VEGETARIAN
     assert g1.dessert_option == DessertOption.CHEESE
     assert g1.favorite_fairy_tale_character == guest_dto.favorite_fairy_tale_character
     assert g1.favorite_tool == guest_dto.favorite_tool
     
-    guests = s.get_guests_of_user(db_user)
+    response = s.get_guests_of_user(db_user)
 
-    assert len(db_user.associated_guests) == len(guests)
-    assert guests[0].joins == True
-    assert guests[0].allergies == g1.allergies
-    assert guests[0].food_option == g1.food_option.value
-
+    assert len(db_user.associated_guests) == len(response.guests)
+    assert response.guests[0].joins == True
+    assert response.guests[0].allergies == g1.allergies
+    assert response.guests[0].food_option == g1.food_option.value

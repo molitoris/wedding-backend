@@ -3,18 +3,18 @@ from sqlalchemy.orm import relationship, mapped_column
 
 from src.database.models.guest_status import GuestStatus
 from src.database.models.user_status import UserStatus
-from src.database.models.user_role import UserRole
+from src.database.models.guest_role import GuestRole
 from src.database.models.food_options import FoodOption
 from src.database.models.dessert_options import DessertOption
 from src.database.db_base import Base
 
 
 # Intermediate table to store m:n relation
-user_role_table = Table(
-    'user_role_table',
+guest_role_table = Table(
+    'guest_role_table',
     Base.metadata,
     Column('role_id', ForeignKey('role_table.id')),
-    Column('user_id', ForeignKey('user_table.id'))
+    Column('guest_id', ForeignKey('guest_table.id'))
 )
 
 
@@ -22,10 +22,10 @@ class Role(Base):
     __tablename__ = 'role_table'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(Enum(UserRole))
+    name = Column(Enum(GuestRole))
 
-    # m:n = Role:User
-    user = relationship('User', secondary=user_role_table, back_populates='role')
+    # m:n = Role:Guest
+    guest = relationship('Guest', secondary=guest_role_table, back_populates='roles')
 
 
 class User(Base):
@@ -43,9 +43,6 @@ class User(Base):
 
     # 1:n = User : Guest
     associated_guests = relationship('Guest', back_populates='user')
-
-    # m:n = User:Role
-    role = relationship('Role', secondary=user_role_table, back_populates='user')
 
 
 class Guest(Base):
@@ -67,3 +64,6 @@ class Guest(Base):
 
     # n:1 = Guest:User
     user = relationship('User', back_populates='associated_guests')
+    
+    # m:n = User:Role
+    roles = relationship('Role', secondary=guest_role_table, back_populates='guest')
