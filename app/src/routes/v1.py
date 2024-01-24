@@ -3,9 +3,9 @@ from typing import Annotated, List
 from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.email_sender import send_verification_email
+from src.email_sender import send_verification_email, send_message_email
 from src.routes.api_utils import get_current_active_user, get_serivce
-from src.routes.dto import EmailVerificationDate, Guest as GuestDto, LoginData, RegistrationData
+from src.routes.dto import EmailVerificationDate, Guest as GuestDto, LoginData, RegistrationData, ContactListDto, LoginResponseDto, GuestListDto, Message, MessageDto
 from src.database.db_tables import User
 from src.config.app_config import load_config
 from src.business_logic.services import Service
@@ -58,21 +58,22 @@ async def register_user(background_task: BackgroundTasks,
 
 @app_v1.post('/email-verification')
 async def verify_email(email_verification: EmailVerificationDate,
-                       service: Service = Depends(get_serivce)):
+                       service: Service = Depends(get_serivce)) -> LoginResponseDto:
     try:
-        access_token = service.verify_email(email_verification=email_verification)
-        return {'access_token': access_token, 'token_type': 'bearer'}
-    except Exception:
+        loginResponseDto = service.verify_email(email_verification=email_verification)
+        return loginResponseDto
+    except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Email verification failed')
 
 
 @app_v1.post('/login')
-async def login(data: LoginData, service: Service = Depends(get_serivce)):
+async def login(data: LoginData,
+                service: Service = Depends(get_serivce)) -> LoginResponseDto:
 
     try:
-        access_token = service.login(data.email, data.password)
-        return {'access_token': access_token, 'token_type': 'bearer'}
+        loginResponseDto = service.login(data.email, data.password)
+        return loginResponseDto
     except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect username or password",
@@ -81,9 +82,9 @@ async def login(data: LoginData, service: Service = Depends(get_serivce)):
 
 @app_v1.get('/guest-info')
 async def guest_info(current_user: Annotated[User, Depends(get_current_active_user)],
-                     service: Service = Depends(get_serivce)):
+                     service: Service = Depends(get_serivce)) -> GuestListDto:
     guests = service.get_guests_of_user(current_user)
-    return {'guests': guests}
+    return guests
 
 
 @app_v1.post('/guest-info')
@@ -98,3 +99,23 @@ async def set_guest_info(data: List[GuestDto],
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect guest",
                             headers={"WWW-Autenticate": "Bearer"})
+
+@app_v1.get('/contact_info')
+async def get_contact_info(service: Service = Depends(get_serivce)) -> ContactListDto:
+    response =  service.get_contact_info()
+    return response
+
+@app_v1.post('/send_message')
+async def send_message(background_task: BackgroundTasks, data: MessageDto, service: Service = Depends(get_serivce)):
+    email = service.send_message(data)
+
+    m = Message(subject=data.subject, message=data.message, 
+                sender_email=data.sender_email, 
+                sender_phone=data.sender_phone)
+
+    background_task.add_task(func=send_message_email,
+                             receiver_email=email['email'],
+                             message=m)
+
+    return email
+
