@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from jose import jwt
 
 from src.config.app_config import Config
-from src.routes.dto import RegistrationData, Guest as GuestDto, EmailVerificationDate, ContactInfoDTO, ContactListDto, LoginResponseDto, GuestListDto, MessageDto
+from src.routes.dto import RegistrationData, GuestDto, EmailVerificationDate, ContactInfoDTO, ContactListDto, LoginResponseDto, GuestListDto, MessageDto
 from src.database.db_tables import User, Guest, Role
 from src.database.models.food_options import FoodOption
 from src.database.models.dessert_options import DessertOption
