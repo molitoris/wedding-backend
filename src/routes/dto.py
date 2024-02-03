@@ -22,11 +22,10 @@ class EmailVerificationDate(BaseModel):
     token: str
 
 
-class Guest(BaseModel):
+class GuestDto(BaseModel):
     id: int
     first_name: str
     last_name: str
-    roles: List[int]
     joins: bool
     food_option: int
     dessert_option: int
@@ -36,7 +35,7 @@ class Guest(BaseModel):
 
 
 class GuestListDto(BaseModel):
-    guests: List[Guest] = Field(default_factory=list)
+    guests: List[GuestDto] = Field(default_factory=list)
 
 
 class ContactInfoDTO(BaseModel):

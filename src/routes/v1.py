@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.email_sender import send_verification_email, send_message_email
 from src.routes.api_utils import get_current_active_user, get_serivce
-from src.routes.dto import EmailVerificationDate, Guest as GuestDto, LoginData, RegistrationData, ContactListDto, LoginResponseDto, GuestListDto, Message, MessageDto
+from src.routes.dto import EmailVerificationDate, GuestDto, LoginData, RegistrationData, ContactListDto, LoginResponseDto, GuestListDto, Message, MessageDto
 from src.database.db_tables import User
 from src.config.app_config import load_config
 from src.business_logic.services import Service
