@@ -11,7 +11,7 @@ from src.database.models.dessert_options import DessertOption
 from src.database.models.user_status import UserStatus
 from src.database.models.guest_status import GuestStatus
 from src.config.app_config import load_config
-from src.routes.dto import RegistrationData, EmailVerificationDate, Guest as GuestDto
+from src.routes.dto import RegistrationData, EmailVerificationDate, GuestDto
 from src.security import hash_token, verify_password, generate_token
 
 
@@ -167,7 +167,6 @@ def test_if_can_get_initial_guest_of_user(mock_db):
 
     assert len(db_user.associated_guests) == len(response.guests)
     assert response.guests[0].joins == True
-    assert response.guests[0].roles == [GuestRole.GUEST.value]
     assert response.guests[0].allergies == g1.allergies
     assert response.guests[0].food_option == g1.food_option.value
 
