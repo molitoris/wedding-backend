@@ -51,7 +51,7 @@ def _send_email(receiver_email: str,
                 plain_text: str,
                 template_name: str,
                 template_data: Dict, 
-                template_dir = Path('./app/src/static/html')                ):
+                template_dir = Path('./src/static/html')                ):
 
     config = load_config()
 
