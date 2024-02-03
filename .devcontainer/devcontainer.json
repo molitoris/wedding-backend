@@ -10,7 +10,7 @@
 	// 👇 Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [8000],
 	"appPort": ["8000:8000"],
-	"runArgs": ["--name", "wedding-web_devcontainer", "--network", "wedding-network"],
+	"runArgs": ["--name", "wedding-api_devcontainer", "--network", "wedding-network"],
 
 	// 👇 Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "",
