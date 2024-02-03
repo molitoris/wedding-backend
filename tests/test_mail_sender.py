@@ -1,7 +1,7 @@
 import os
 
-from app.src.email_sender import send_verification_email
-from app.src.config.app_config import load_config
+from src.email_sender import send_verification_email
+from src.config.app_config import load_config
 from tests.local_smtp_server import smtp_server
 
 

@@ -31,10 +31,10 @@ COPY ./pyproject.toml ./poetry.lock ./
 RUN poetry install --without dev --no-root \
     && rm -rf $POETRY_CACHE_DIR
 
-COPY ./app ./app
+COPY ./src ./src
 
 # RUN poetry install --without dev
 
-ENV PYTHONPATH /workspaces/wedding-api/app/
+ENV PYTHONPATH /workspaces/wedding-api/src/
 
-CMD ["poetry", "run", "uvicorn", "app.src.main:app_v1", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["poetry", "run", "uvicorn", "src.main:app_v1", "--host", "0.0.0.0", "--port", "8000"]
