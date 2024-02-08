@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.email_sender import send_verification_email, \
                                 send_message_email, \
                                 send_password_reset_email
-from src.routes.api_utils import get_current_active_user, get_serivce
+from src.routes.api_utils import get_current_active_user, \
+                                    get_serivce, \
+                                    get_admin_or_withness_user
 from src.routes.dto import EmailVerificationDate, \
                             GuestDto, \
                             LoginData, \
@@ -122,6 +124,14 @@ async def guest_info(current_user: Annotated[User, Depends(get_current_active_us
     guests = service.get_guests_of_user(current_user)
     return guests
 
+
+@app_v1.get('/guest-infos')
+async def guest_infos(
+    current_user: Annotated[User, Depends(get_admin_or_withness_user)],
+                     service: Service = Depends(get_serivce)) -> GuestListDto:
+    
+    return service.guest_infos()
+    
 
 @app_v1.post('/guest-info')
 async def set_guest_info(data: List[GuestDto],

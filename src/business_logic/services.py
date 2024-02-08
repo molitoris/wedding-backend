@@ -136,6 +136,20 @@ class Service():
                                              favorite_fairy_tale_character=guest.favorite_fairy_tale_character,
                                              favorite_tool=guest.favorite_tool))
         return guestList
+    
+    def guest_infos(self):
+        guest_dto = []
+        for guest in self.db.query(Guest).all():
+            guest_dto.append(GuestDto(id=guest.id,
+                                      first_name=guest.first_name,
+                                      last_name=guest.last_name,
+                                      joins=guest.status == GuestStatus.REGISTERED,
+                                      food_option=guest.food_option.value,
+                                      dessert_option=guest.dessert_option.value,
+                                      allergies=guest.allergies,
+                                      favorite_fairy_tale_character=guest.favorite_fairy_tale_character,
+                                      favorite_tool=guest.favorite_tool))
+        return GuestListDto(guests=guest_dto)
 
     def update_guests_of_user(self, guest_dtos: List[GuestDto], user: User) -> int:
         """ Updates preferences of 
