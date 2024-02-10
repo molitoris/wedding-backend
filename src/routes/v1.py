@@ -153,5 +153,5 @@ async def send_message(background_task: BackgroundTasks, data: MessageDto, servi
                              receiver_email=email['email'],
                              message=m)
 
-    return email
+    return {'message', 'ok'}
 
