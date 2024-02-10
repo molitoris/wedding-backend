@@ -80,7 +80,7 @@ def populate_db():
         # Create user
         user = User(invitation_hash=inviation_hash, status=UserStatus.UNSEEN,
                     email_verification_hash=None, last_login=None, email=None,
-                    password_hash=None)
+                    password_hash=None, password_reset_hash=None)
 
         names = []
         # Store token with guest names
