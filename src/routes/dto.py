@@ -21,9 +21,12 @@ class LoginResponseDto(BaseModel):
 class ForgetPasswordRequestDto(BaseModel):
     email: str
 
+class ForgetPasswordDto(BaseModel):
+    email: str
+    password_token: str
 
 class ResetPasswordRequestDto(BaseModel):
-    reset_token: str
+    token: str
     password: str
 
 
@@ -68,4 +71,5 @@ class Message(BaseModel):
     message: str
     sender_email: str
     sender_phone: str
+
 
