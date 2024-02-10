@@ -13,6 +13,7 @@ from src.routes.dto import RegistrationData, \
                             ContactListDto, \
                             LoginResponseDto, \
                             ForgetPasswordRequestDto, \
+                            ForgetPasswordDto, \
                             ResetPasswordRequestDto, \
                             GuestListDto, \
                             MessageDto
@@ -90,10 +91,33 @@ class Service():
         if not user or not user.email or user.status not in {UserStatus.VERIFIED}:
             return None
         
-        self.db.query(User).
-        
-        return user.email, 
+        try:
+            password_reset_token = generate_token()
+            user.password_reset_hash = hash_token(password_reset_token)
 
+            self.db.commit()
+            self.db.refresh(user)
+            return ForgetPasswordDto(email=user.email, password_token=password_reset_token)
+        except Exception:
+            self.db.rollback()
+            return None
+    
+    def reset_password(self, reset_password_dto: ResetPasswordRequestDto):
+
+        reset_password_hash = hash_token(reset_password_dto.token)
+        user = self.db.query(User).filter_by(password_reset_hash=reset_password_hash).first()
+
+        if not user:
+            raise AttributeError()
+
+        try:
+            user.password_hash = hash_password(reset_password_dto.password)
+            user.password_reset_hash = None
+
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise AttributeError()
 
     def get_guests_of_user(self, user: User) -> GuestListDto:
         guestList = GuestListDto()

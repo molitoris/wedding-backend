@@ -3,7 +3,9 @@ from typing import Annotated, List
 from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.email_sender import send_verification_email, send_message_email
+from src.email_sender import send_verification_email, \
+                                send_message_email, \
+                                send_password_reset_email
 from src.routes.api_utils import get_current_active_user, get_serivce
 from src.routes.dto import EmailVerificationDate, \
                             GuestDto, \
@@ -89,18 +91,29 @@ async def login(data: LoginData,
                             detail="Incorrect username or password",
                             headers={"WWW-Autenticate": "Bearer"})
 
-@app_v1.post('forget-password')
+@app_v1.post('/forget-password')
 async def forget_password(background_task: BackgroundTasks,
                           data: ForgetPasswordRequestDto,
                           service: Service = Depends(get_serivce)):
 
-    email = service.forget_password(data)
-    background_task.add_task()
+    forget_password_dto = service.forget_password(data)
+
+    if forget_password_dto is None:
+        return {'message': 'ok'}
+
+    background_task.add_task(func=send_password_reset_email, forget_password_dto=forget_password_dto)
 
 
-@app_v1.post('reset-password')
+@app_v1.post('/reset-password')
 async def reset_password(data: ResetPasswordRequestDto, service: Service = Depends(get_serivce)):
-    pass
+
+    try:
+        service.reset_password(reset_password_dto=data)
+        return {'message': 'ok'}
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Failed to reset password",
+                            headers={"WWW-Autenticate": "Bearer"})
 
 
 @app_v1.get('/guest-info')

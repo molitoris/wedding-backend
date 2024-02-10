@@ -7,7 +7,25 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 from src.config.app_config import load_config
-from src.routes.dto import Message
+from src.routes.dto import Message, ForgetPasswordDto
+
+def send_password_reset_email(forget_password_dto: ForgetPasswordDto):
+    config = load_config()
+
+    subject = "Hochzeit Melanie & Rafael - Passwort Reset"
+    template_name = 'email_password_reset.html'
+    template_data = {
+        'base_url': config.frontend_base_url,
+        'password_token': forget_password_dto.password_token
+        }
+
+    plain_text = f'{forget_password_dto.password_token}'
+
+    _send_email(receiver_email=forget_password_dto.email,
+                subject=subject,
+                plain_text=plain_text,
+                template_name=template_name,
+                template_data=template_data)
 
 
 def send_message_email(receiver_email: str, message: Message):
