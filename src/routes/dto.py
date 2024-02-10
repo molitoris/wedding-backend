@@ -18,6 +18,15 @@ class LoginResponseDto(BaseModel):
     token_type: str = Field(default="bearer")
 
 
+class ForgetPasswordRequestDto(BaseModel):
+    email: str
+
+
+class ResetPasswordRequestDto(BaseModel):
+    reset_token: str
+    password: str
+
+
 class EmailVerificationDate(BaseModel):
     token: str
 
