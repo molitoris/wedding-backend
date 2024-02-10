@@ -6,7 +6,16 @@ from sqlalchemy.orm import Session
 from jose import jwt
 
 from src.config.app_config import Config
-from src.routes.dto import RegistrationData, GuestDto, EmailVerificationDate, ContactInfoDTO, ContactListDto, LoginResponseDto, GuestListDto, MessageDto
+from src.routes.dto import RegistrationData, \
+                            GuestDto, \
+                            EmailVerificationDate, \
+                            ContactInfoDTO, \
+                            ContactListDto, \
+                            LoginResponseDto, \
+                            ForgetPasswordRequestDto, \
+                            ResetPasswordRequestDto, \
+                            GuestListDto, \
+                            MessageDto
 from src.database.db_tables import User, Guest, Role
 from src.database.models.food_options import FoodOption
 from src.database.models.dessert_options import DessertOption
@@ -74,6 +83,17 @@ class Service():
             raise AttributeError()
 
         return LoginResponseDto(access_token=self._create_access_token(email=user.email))
+    
+    def forget_password(self, forget_password_dto: ForgetPasswordRequestDto):
+        user = self.db.query(User).filter_by(email=forget_password_dto.email).first()
+
+        if not user or not user.email or user.status not in {UserStatus.VERIFIED}:
+            return None
+        
+        self.db.query(User).
+        
+        return user.email, 
+
 
     def get_guests_of_user(self, user: User) -> GuestListDto:
         guestList = GuestListDto()
