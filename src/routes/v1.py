@@ -5,7 +5,17 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.email_sender import send_verification_email, send_message_email
 from src.routes.api_utils import get_current_active_user, get_serivce
-from src.routes.dto import EmailVerificationDate, GuestDto, LoginData, RegistrationData, ContactListDto, LoginResponseDto, GuestListDto, Message, MessageDto
+from src.routes.dto import EmailVerificationDate, \
+                            GuestDto, \
+                            LoginData, \
+                            ForgetPasswordRequestDto, \
+                            ResetPasswordRequestDto, \
+                            RegistrationData, \
+                            ContactListDto, \
+                            LoginResponseDto, \
+                            GuestListDto, \
+                            Message, \
+                            MessageDto
 from src.database.db_tables import User
 from src.config.app_config import load_config
 from src.business_logic.services import Service
@@ -78,6 +88,19 @@ async def login(data: LoginData,
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect username or password",
                             headers={"WWW-Autenticate": "Bearer"})
+
+@app_v1.post('forget-password')
+async def forget_password(background_task: BackgroundTasks,
+                          data: ForgetPasswordRequestDto,
+                          service: Service = Depends(get_serivce)):
+
+    email = service.forget_password(data)
+    background_task.add_task()
+
+
+@app_v1.post('reset-password')
+async def reset_password(data: ResetPasswordRequestDto, service: Service = Depends(get_serivce)):
+    pass
 
 
 @app_v1.get('/guest-info')
