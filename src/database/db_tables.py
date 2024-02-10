@@ -32,9 +32,9 @@ class User(Base):
     __tablename__ = 'user_table'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_name = Column(String, nullable=True)
     email = Column(String, unique=True, nullable=True)
     password_hash = Column(String, nullable=True)
+    password_reset_hash = Column(String, nullable=True)
     invitation_hash = Column(String, index=True, unique=True, nullable=False)
     email_verification_hash = Column(String, index=True, unique=True, nullable=True)
     last_login = Column(String, nullable=True)
