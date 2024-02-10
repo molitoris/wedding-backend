@@ -181,7 +181,7 @@ class Service():
     def get_contact_info(self) -> ContactListDto:
         target_roles = [GuestRole.ADMIN, GuestRole.WITNESS]
         guests = self.db.query(Guest)\
-                .join(Role.guest).filter(Role.name.in_(target_roles)).order_by(Guest.id).all()
+                .join(Role.guest).join(User).filter(Role.name.in_(target_roles), and_(User.email != None)).order_by(Guest.id).all()
         
         contacts = [ContactInfoDTO(id=g.id,
                                    first_name=g.first_name,
@@ -193,7 +193,10 @@ class Service():
         has_admin_role = self.db.query(Guest).join(Role.guest).filter(Role.name.in_(target_roles), and_(Guest.id==message.receiver_id)).first()
 
         if has_admin_role:
-            user = self.db.query(User).join(Guest.user).filter(Guest.id==message.receiver_id).first()
+            user = self.db.query(User).join(Guest.user).filter(Guest.id==message.receiver_id, User.email != None).first()
+        
+        if not user:
+            raise AttributeError()
 
         return {'email': user.email}
 
