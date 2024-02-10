@@ -121,6 +121,4 @@ def populate_db():
 
 
 if __name__ == '__main__':
-    os.environ['APP_ENV'] = 'production'
-    # os.environ['APP_ENV'] = 'dev'
     populate_db()
