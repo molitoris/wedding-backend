@@ -83,6 +83,9 @@ class Service():
         if not verify_password(password, user.password_hash):
             raise AttributeError()
 
+        user.last_login = datetime.now().isoformat()
+        self.db.commit()
+
         return LoginResponseDto(access_token=self._create_access_token(email=user.email))
     
     def forget_password(self, forget_password_dto: ForgetPasswordRequestDto):
