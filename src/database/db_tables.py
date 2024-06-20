@@ -64,6 +64,6 @@ class Guest(Base):
 
     # n:1 = Guest:User
     user = relationship('User', back_populates='associated_guests')
-    
+
     # m:n = User:Role
     roles = relationship('Role', secondary=guest_role_table, back_populates='guest')
