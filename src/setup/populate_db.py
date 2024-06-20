@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 import json
 import pathlib
@@ -19,6 +18,7 @@ from src.setup.qr_code import QrCodeImageGenerator
 from src.database.db_base import Base
 
 from src.config.app_config import load_config
+
 
 def _get_role(row) -> List[Role]:
     roles = []
@@ -98,7 +98,6 @@ def populate_db():
                                                 favorite_fairy_tale_character='',
                                                 favorite_tool='',
                                                 roles=roles))
-
 
             invitation_codes[inviation_hash]['guests'].append({'first_name': row.first_name,
                                                                'last_name': row.last_name,

@@ -21,9 +21,11 @@ class LoginResponseDto(BaseModel):
 class ForgetPasswordRequestDto(BaseModel):
     email: str
 
+
 class ForgetPasswordDto(BaseModel):
     email: str
     password_token: str
+
 
 class ResetPasswordRequestDto(BaseModel):
     token: str
@@ -55,6 +57,7 @@ class ContactInfoDTO(BaseModel):
     first_name: str
     last_name: str
 
+
 class ContactListDto(BaseModel):
     contacts: List[ContactInfoDTO] = Field(default_factory=list)
 
@@ -66,10 +69,9 @@ class MessageDto(BaseModel):
     sender_email: str
     sender_phone: str
 
+
 class Message(BaseModel):
     subject: str
     message: str
     sender_email: str
     sender_phone: str
-
-

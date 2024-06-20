@@ -3,21 +3,28 @@ from typing import Annotated, List
 from fastapi import FastAPI, Depends, HTTPException, status, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.email_sender import send_verification_email, \
-                                send_message_email, \
-                                send_password_reset_email
-from src.routes.api_utils import get_current_active_user, get_serivce
-from src.routes.dto import EmailVerificationDate, \
-                            GuestDto, \
-                            LoginData, \
-                            ForgetPasswordRequestDto, \
-                            ResetPasswordRequestDto, \
-                            RegistrationData, \
-                            ContactListDto, \
-                            LoginResponseDto, \
-                            GuestListDto, \
-                            Message, \
-                            MessageDto
+from src.email_sender import (
+    send_verification_email,
+    send_message_email,
+    send_password_reset_email
+)
+from src.routes.api_utils import (
+    get_current_active_user,
+    get_serivce,
+)
+from src.routes.dto import (
+    EmailVerificationDate,
+    GuestDto,
+    LoginData,
+    ForgetPasswordRequestDto,
+    ResetPasswordRequestDto,
+    RegistrationData,
+    ContactListDto,
+    LoginResponseDto,
+    GuestListDto,
+    Message,
+    MessageDto
+)
 from src.database.db_tables import User
 from src.config.app_config import load_config
 from src.business_logic.services import Service
@@ -74,7 +81,7 @@ async def verify_email(email_verification: EmailVerificationDate,
     try:
         loginResponseDto = service.verify_email(email_verification=email_verification)
         return loginResponseDto
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Email verification failed')
 
@@ -91,6 +98,7 @@ async def login(data: LoginData,
                             detail="Incorrect username or password",
                             headers={"WWW-Autenticate": "Bearer"})
 
+
 @app_v1.post('/forget-password')
 async def forget_password(background_task: BackgroundTasks,
                           data: ForgetPasswordRequestDto,
@@ -101,7 +109,8 @@ async def forget_password(background_task: BackgroundTasks,
     if forget_password_dto is None:
         return {'message': 'ok'}
 
-    background_task.add_task(func=send_password_reset_email, forget_password_dto=forget_password_dto)
+    background_task.add_task(func=send_password_reset_email,
+                             forget_password_dto=forget_password_dto)
 
 
 @app_v1.post('/reset-password')
@@ -136,17 +145,20 @@ async def set_guest_info(data: List[GuestDto],
                             detail="Incorrect guest",
                             headers={"WWW-Autenticate": "Bearer"})
 
+
 @app_v1.get('/contact_info')
 async def get_contact_info(service: Service = Depends(get_serivce)) -> ContactListDto:
-    response =  service.get_contact_info()
+    response = service.get_contact_info()
     return response
 
+
 @app_v1.post('/send_message')
-async def send_message(background_task: BackgroundTasks, data: MessageDto, service: Service = Depends(get_serivce)):
+async def send_message(background_task: BackgroundTasks, data: MessageDto,
+                       service: Service = Depends(get_serivce)):
     email = service.send_message(data)
 
-    m = Message(subject=data.subject, message=data.message, 
-                sender_email=data.sender_email, 
+    m = Message(subject=data.subject, message=data.message,
+                sender_email=data.sender_email,
                 sender_phone=data.sender_phone)
 
     background_task.add_task(func=send_message_email,
@@ -154,4 +166,3 @@ async def send_message(background_task: BackgroundTasks, data: MessageDto, servi
                              message=m)
 
     return {'message', 'ok'}
-

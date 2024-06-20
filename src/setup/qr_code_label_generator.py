@@ -27,7 +27,7 @@ class QrCodeLabelGenerator:
         font.size = Pt(8)
 
         n_cols = 3
-        n_rows = math.ceil(len(label_data.keys())/n_cols)
+        n_rows = math.ceil(len(label_data.keys()) / n_cols)
 
         self._set_document_margins(document, 25, 25, 25, 25)
 
@@ -42,7 +42,7 @@ class QrCodeLabelGenerator:
             row.height = Mm(50)
             for cell in row.cells:
                 cell.width = Mm(50)
-    
+
         for (i, data) in enumerate(label_data):
 
             row_index = i // n_cols
@@ -50,27 +50,27 @@ class QrCodeLabelGenerator:
 
             cell = table.cell(row_index, col_index)
             cell.paragraphs[0].style = document.styles['Normal']
-            cell.paragraphs[0].alignment = 1 
+            cell.paragraphs[0].alignment = 1
 
-            width= Mm(40)
-            height= Mm(40)
+            width = Mm(40)
+            height = Mm(40)
 
             token = label_data[data]["token"]
 
             text = f'{url}/\nregistration?token={token}'
-            image_file_path = pathlib.Path(self.qr_code_path.name).joinpath(token).with_suffix('.png')
+            image_file_path = pathlib.Path(self.qr_code_path.name)\
+                .joinpath(token).with_suffix('.png')
             self.qr_generator.get_image(text=text, output_path=image_file_path)
 
             self._add_img(cell, str(image_file_path.absolute()), width, height, text)
 
-
         # Save the document
         document.save(output_path)
-    
+
     def _add_img(self, cell, img_path, width, height, text):
-            run = cell.paragraphs[0].add_run()
-            run.add_picture(img_path, width= Mm(40), height= Mm(40))
-            run.add_text(f'\n{text}')
+        run = cell.paragraphs[0].add_run()
+        run.add_picture(img_path, width=Mm(40), height=Mm(40))
+        run.add_text(f'\n{text}')
 
     def _set_document_margins(self, document, top_margin, bottom_margin, left_margin, right_margin):
         sections = document.sections
