@@ -1,6 +1,6 @@
 import smtplib
 import ssl
-from typing import Dict
+from typing import Dict, List, Tuple
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
@@ -63,6 +63,31 @@ def send_verification_email(receiver_email: str, verification_token: str):
                 subject=subject,
                 plain_text=f'{verification_token}',
                 template_name='email_verification_template.html',
+                template_data=template_data)
+
+
+def send_reminer_email(guests: List[Tuple[str, str]], receiver_email: str):
+
+    subject = 'Hochzeit Melanie & Rafael - Bald ist es soweit'
+
+    greetings = ''
+    for gender, name in guests:
+        if gender == 'male':
+            greetings += 'Lieber ' + name + ', '
+        else:
+            greetings += 'Liebe ' + name + ', '
+
+    greetings = greetings.strip().strip(',')
+
+    template_data = {
+        'guest_count': len(guests),
+        'greeting': greetings,
+    }
+
+    _send_email(receiver_email=receiver_email,
+                subject=subject,
+                plain_text='',
+                template_name='email_reminder_template.html',
                 template_data=template_data)
 
 
