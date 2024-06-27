@@ -1,0 +1,24 @@
+{% if guest_count == 1 %}
+  {% set pronoun1 = "dich" %}
+  {% set pronoun2 = "dir" %}
+{% else %}
+  {% set pronoun1 = "euch" %}
+  {% set pronoun2 = "euch" %}
+{% endif %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Erinnerung an unsere Hochzeit</title>
+</head>
+<body>
+    <h1>{{ greeting }}</h1>
+    <p>Bald ist es soweit. Wir freuen uns sehr, {{ pronoun1 }} am 20. Juli 2024 bei unserer Hochzeit begrüssen zu dürfen und diesen besonderen Tag mit {{ pronoun2 }} im Hotel FloraAlpina in Vitznau zu verbringen.</p>
+    <p>Die Trauung wird um 15 Uhr beginnen.</p>
+    <p>Die reservierten Zimmer können erst nach dem Apéro bezogen werden. Es steht jedoch ein Raum zur Verfügung, um sich umzuziehen oder noch ein letztes Mal frisch zu machen. Deshalb reicht es, wenn ihr um ca. 14.30 Uhr vor Ort seid.</p>
+    <p>Wir freuen uns auf eine märchenhafte und bodenständige Hochzeit.</p>
+    <p>Mit herzlichen Grüsen,</p>
+    <p>Melanie & Rafael</p>
+</body>
+</html>
