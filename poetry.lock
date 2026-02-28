@@ -320,17 +320,20 @@ gmpy2 = ["gmpy2"]
 
 [[package]]
 name = "faker"
-version = "36.2.3"
+version = "40.5.1"
 description = "Faker is a Python package that generates fake data for you."
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 files = [
-    {file = "Faker-36.2.3-py3-none-any.whl", hash = "sha256:7ca995d65ec08d013f3c1230da7f628cb2c169a77e89cd265d7a59f443f0febd"},
-    {file = "faker-36.2.3.tar.gz", hash = "sha256:1ed2d7a9c3a5657fc11a4298e8cf19f71d83740560d4ed0895b30399d482d538"},
+    {file = "faker-40.5.1-py3-none-any.whl", hash = "sha256:c69640c1e13bad49b4bcebcbf1b52f9f1a872b6ea186c248ada34d798f1661bf"},
+    {file = "faker-40.5.1.tar.gz", hash = "sha256:70222361cd82aa10cb86066d1a4e8f47f2bcdc919615c412045a69c4e6da0cd3"},
 ]
 
 [package.dependencies]
-tzdata = "*"
+tzdata = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+tzdata = ["tzdata"]
 
 [[package]]
 name = "fastapi"
@@ -1767,4 +1770,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.6.3)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e34557f4c2fd31d133d680c6930c82823db0ac2c59f2db361e22204ee1e8f9a1"
+content-hash = "cb21a61e088bc1b2c3d455d6dc053f250540c077c15cc652b8e42d4b3f27ef01"
