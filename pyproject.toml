@@ -20,7 +20,7 @@ pillow = "^13.0.0"
 pydantic-settings = "^2.0.3"
 sqlalchemy-utils = "^0.43.0"
 python-docx = "^1.1.0"
-httpx = "^0.28.0"
+httpx = "^0.29.0"
 
 [tool.poetry.group.dev.dependencies]
 setuptools = "^78.0.0"
